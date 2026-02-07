@@ -1,0 +1,68 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hashbot"
+version = "0.1.0"
+description = "Agent Economy on HashKey Chain - A2A Protocol with x402 Payments"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+authors = [
+    { name = "HashBot Team" }
+]
+keywords = ["agent", "a2a", "x402", "blockchain", "hashkey", "telegram"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn>=0.27.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "web3>=6.15.0",
+    "eth-account>=0.10.0",
+    "python-telegram-bot>=20.7",
+    "httpx>=0.26.0",
+    "sqlalchemy>=2.0.25",
+    "aiosqlite>=0.19.0",
+    "python-dotenv>=1.0.0",
+    "structlog>=24.1.0",
+    "cryptography>=42.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.1.0",
+    "mypy>=1.8.0",
+]
+
+[project.scripts]
+hashbot = "server.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["hashbot", "server"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

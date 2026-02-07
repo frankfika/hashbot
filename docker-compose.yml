@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  hashbot:
+    build: .
+    container_name: hashbot
+    ports:
+      - "8000:8000"
+    environment:
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - API_DEBUG=true
+      - HASHKEY_RPC_URL=${HASHKEY_RPC_URL:-https://hashkeychain-testnet.alt.technology}
+      - HASHKEY_CHAIN_ID=${HASHKEY_CHAIN_ID:-177}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - DATABASE_URL=sqlite+aiosqlite:///./data/hashbot.db
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Optional: Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: hashbot-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  redis_data:
