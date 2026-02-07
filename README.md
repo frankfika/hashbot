@@ -63,14 +63,28 @@ HashBot 是一个开源的 **Agent 经济框架**，让 AI Agent 可以相互调
 | 🤖 **Telegram Bot** | 用户友好的交互界面 |
 | 🧩 **Plugin System** | 轻松创建自己的付费 Agent |
 
+## 🧰 Prerequisites
+
+- Python 3.11+（建议使用虚拟环境）
+- 可选：Docker / Docker Compose
+- 可选：Redis（缓存）
+- 需要准备：Telegram Bot Token、HashKey RPC（默认使用测试网）
+
 ## 🚀 Quick Start
 
-### 1. Clone & Install
+### 1. Clone & Install（本地开发）
 
 ```bash
 git clone https://github.com/your-org/hashbot.git
 cd hashbot
+# 创建并激活虚拟环境（Windows）
+python -m venv .venv
+.venv\Scripts\activate
+
+# 安装
 pip install -e .
+# 开发依赖（可选）
+pip install -e .[dev]
 ```
 
 ### 2. Configure
@@ -83,8 +97,10 @@ cp .env.example .env
 ### 3. Run
 
 ```bash
-# Development
+# Development（本地）
 python -m server.main
+# 或使用项目脚本（安装后会生成命令）
+hashbot
 
 # Production (Docker)
 docker-compose up -d
@@ -112,6 +128,51 @@ curl -X POST http://localhost:8000/a2a \
     }
   }'
 ```
+
+## ⚙️ Configuration
+
+- 常用必填
+  - TELEGRAM_BOT_TOKEN：Telegram 机器人令牌
+  - WALLET_PRIVATE_KEY：商户钱包私钥（用于链上结算）
+  - MERCHANT_ADDRESS：商户地址
+- 常用可选
+  - HASHKEY_RPC_URL（默认测试网）：https://hashkeychain-testnet.alt.technology
+  - HASHKEY_CHAIN_ID（默认测试网）：177
+  - API_HOST（默认 0.0.0.0），API_PORT（默认 8000），API_DEBUG（默认 false）
+  - DATABASE_URL（默认 sqlite+aiosqlite:///./hashbot.db）
+  - LOG_LEVEL（DEBUG/INFO/WARNING/ERROR，默认 INFO），LOG_FORMAT（json/console，默认 json）
+  - JWT_* 与 API_SECRET_KEY（如需开启鉴权）
+
+示例 .env（节选）：
+
+```dotenv
+TELEGRAM_BOT_TOKEN=xxxxxx
+HASHKEY_RPC_URL=https://hashkeychain-testnet.alt.technology
+HASHKEY_CHAIN_ID=177
+API_HOST=0.0.0.0
+API_PORT=8000
+API_DEBUG=true
+DATABASE_URL=sqlite+aiosqlite:///./hashbot.db
+LOG_LEVEL=INFO
+LOG_FORMAT=json
+```
+
+安全提示：不要将私钥、Token 等敏感信息提交到仓库或日志。
+
+## 📲 Telegram 集成
+
+- 通过 BotFather 创建机器人并获取 TELEGRAM_BOT_TOKEN
+- Webhook 接口：POST /webhook/telegram（开发环境默认回显）
+- 在生产环境中建议使用 python-telegram-bot 的 Application 来处理更新
+- Bot 内置命令：/start、/help、/agents、/wallet、/balance、/pay
+
+## 📘 API 文档
+
+- 健康检查：GET /health
+- 列出代理：GET /agents
+- A2A 发现：GET /a2a/.well-known/agent.json
+- 任务发送：POST /a2a
+- 如果 API_DEBUG=true，会开放 Swagger：/docs 与 ReDoc：/redoc
 
 ## 🏗️ Architecture
 
@@ -262,6 +323,27 @@ Content-Type: application/json
 ```http
 GET /agents
 ```
+
+## 🧪 Development
+
+- 运行测试
+
+```bash
+pytest -q
+```
+
+- 代码静态检查
+
+```bash
+ruff check .
+mypy .
+```
+
+## 🎥 Demo
+
+- 启动后访问：/health 查看服务状态
+- 示例 Agents：Crypto Analyst、Translator、Code Reviewer
+- Telegram 中使用 /agents 浏览并调用 Agent，付费由 x402 自动处理
 
 ## 🌐 HashKey Chain
 
