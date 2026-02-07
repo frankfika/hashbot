@@ -1,15 +1,16 @@
 """x402 Payment executor for automatic payment flow."""
 
+from collections.abc import Awaitable, Callable
 from decimal import Decimal
 from functools import wraps
-from typing import Any, Callable, Awaitable, TypeVar
+from typing import Any, TypeVar
 
 from hashbot.a2a.messages import Task, TaskState
 from hashbot.x402.payment import (
-    PaymentStatus,
-    PaymentRequirements,
-    PaymentPayload,
     PaymentConfig,
+    PaymentPayload,
+    PaymentRequirements,
+    PaymentStatus,
     X402PaymentRequiredResponse,
 )
 

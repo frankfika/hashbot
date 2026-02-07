@@ -1,7 +1,8 @@
 """HashKey Chain interaction layer."""
 
 from typing import Any
-from web3 import Web3, AsyncWeb3
+
+from web3 import AsyncWeb3, Web3
 from web3.middleware import ExtraDataToPOAMiddleware
 
 

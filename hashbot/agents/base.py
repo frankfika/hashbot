@@ -1,12 +1,12 @@
 """Base agent class and decorators."""
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from decimal import Decimal
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 from hashbot.a2a.messages import AgentCard, Skill, Task, TaskState
 from hashbot.x402.payment import PaymentConfig
-
 
 T = TypeVar("T", bound="BaseAgent")
 
@@ -40,9 +40,9 @@ def agent_card(
         cls._agent_description = description
         cls._price_per_call = Decimal(str(price_per_call)) if price_per_call else None
         cls._currency = currency
-        cls._skills = skills or []
+        cls._skills = skills or None
         cls._version = version
-        cls._metadata = metadata
+        cls._metadata = metadata or None
 
         return cls
 
@@ -57,9 +57,9 @@ class BaseAgent(ABC):
     _agent_description: str = ""
     _price_per_call: Decimal | None = None
     _currency: str = "HKDC"
-    _skills: list[dict[str, Any]] = []
+    _skills: list[dict[str, Any]] | None = None
     _version: str = "1.0.0"
-    _metadata: dict[str, Any] = {}
+    _metadata: dict[str, Any] | None = None
 
     def __init__(self, base_url: str = ""):
         """Initialize agent."""
@@ -119,7 +119,7 @@ class BaseAgent(ABC):
                 description=s.get("description", self.description),
                 tags=s.get("tags", []),
             )
-            for s in self._skills
+            for s in (self._skills or [])
         ]
 
         # Add default skill if none defined
@@ -140,7 +140,7 @@ class BaseAgent(ABC):
             skills=skills,
             x402_enabled=self.requires_payment,
             metadata={
-                **self._metadata,
+                **(self._metadata or {}),
                 "price_per_call": str(self._price_per_call) if self._price_per_call else None,
                 "currency": self._currency,
             },

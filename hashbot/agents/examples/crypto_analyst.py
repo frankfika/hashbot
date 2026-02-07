@@ -1,11 +1,10 @@
 """Crypto Analyst Agent - Token analysis and market insights."""
 
-import random
 from typing import Any
 
+from hashbot.a2a.messages import Task
 from hashbot.agents.base import BaseAgent, agent_card
 from hashbot.agents.registry import register_agent
-from hashbot.a2a.messages import Task, TaskState
 
 
 @register_agent("crypto_analyst")
@@ -117,7 +116,7 @@ class CryptoAnalystAgent(BaseAgent):
 💰 **Market Cap:** ${token_data['market_cap']}
 
 **Technical Indicators:**
-• RSI (14): {random.randint(30, 70)}
+• RSI (14): 55
 • MACD: {'Bullish' if token_data['change_24h'] > 0 else 'Bearish'}
 • Moving Average: {'Above' if token_data['change_24h'] > 0 else 'Below'} 50-day MA
 
@@ -161,7 +160,8 @@ class CryptoAnalystAgent(BaseAgent):
 • ETH ETF trading volume increasing
 • BTC halving effects continuing
 
-**AI Outlook:** Generally bullish conditions with institutional interest remaining strong. Consider DCA strategy for long-term holdings.
+**AI Outlook:** Generally bullish conditions with institutional interest
+remaining strong. Consider DCA strategy for long-term holdings.
 
 ⚠️ *AI analysis for educational purposes only.*
 """

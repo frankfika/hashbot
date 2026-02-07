@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}HashBot - My Agents{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-3xl font-bold">My Agents</h1>
+  <button class="btn btn-primary btn-sm" onclick="showCreateModal()">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+    Create Agent
+  </button>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="my-agents-grid">
+  <div class="col-span-full text-center py-12 opacity-60">
+    <span class="loading loading-spinner loading-lg"></span>
+    <p class="mt-2">Loading your agents...</p>
+  </div>
+</div>
+
+<!-- Create Agent Modal -->
+<dialog id="create-modal" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg mb-4">Create New Agent</h3>
+    <form id="create-form" onsubmit="createAgent(event)">
+      <div class="form-control mb-3">
+        <label class="label"><span class="label-text">Agent Name</span></label>
+        <input type="text" id="agent-name" class="input input-bordered" placeholder="My Crypto Assistant" required>
+      </div>
+      <div class="form-control mb-3">
+        <label class="label"><span class="label-text">Description</span></label>
+        <textarea id="agent-desc" class="textarea textarea-bordered" rows="3" placeholder="What does your agent do?"></textarea>
+      </div>
+      <div class="form-control mb-4">
+        <label class="label"><span class="label-text">Soul / System Prompt (optional)</span></label>
+        <textarea id="agent-soul" class="textarea textarea-bordered" rows="4" placeholder="Custom personality and instructions..."></textarea>
+      </div>
+      <div class="modal-action">
+        <button type="button" class="btn" onclick="document.getElementById('create-modal').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="create-btn">Create</button>
+      </div>
+    </form>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const OWNER_TELEGRAM_ID = {{ telegram_id | default(0) }};
+
+function showCreateModal() {
+  document.getElementById('create-modal').showModal();
+}
+
+async function loadMyAgents() {
+  const grid = document.getElementById('my-agents-grid');
+  try {
+    const resp = await fetch(`/api/agents/user/${OWNER_TELEGRAM_ID}`);
+    if (!resp.ok) {
+      grid.innerHTML = '<div class="col-span-full alert alert-info">No agents yet. Create your first agent!</div>';
+      return;
+    }
+    const data = await resp.json();
+    const agents = data.agents || [];
+
+    if (agents.length === 0) {
+      grid.innerHTML = `
+        <div class="col-span-full text-center py-12">
+          <p class="text-lg opacity-60 mb-4">You haven't created any agents yet</p>
+          <button class="btn btn-primary" onclick="showCreateModal()">Create Your First Agent</button>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = '';
+    agents.forEach(agent => {
+      const card = document.createElement('div');
+      card.className = 'card bg-base-100 shadow hover:shadow-lg transition-all';
+      card.innerHTML = `
+        <div class="card-body">
+          <div class="flex items-start justify-between">
+            <h2 class="card-title">${agent.name}</h2>
+            <div class="flex gap-1">
+              ${agent.is_public ? '<span class="badge badge-success badge-sm">Public</span>' : '<span class="badge badge-ghost badge-sm">Private</span>'}
+              ${agent.price_per_call > 0 ? `<span class="badge badge-warning badge-sm">${agent.price_per_call} ${agent.currency}</span>` : ''}
+            </div>
+          </div>
+          <p class="opacity-60 text-sm">${agent.description || 'No description'}</p>
+          <div class="card-actions justify-end mt-4">
+            <a href="/dashboard/my-agents/${agent.id}/skills" class="btn btn-ghost btn-xs">Skills</a>
+            <a href="/dashboard/my-agents/${agent.id}" class="btn btn-primary btn-xs">Manage</a>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    });
+  } catch {
+    grid.innerHTML = '<div class="col-span-full alert alert-error">Failed to load agents</div>';
+  }
+}
+
+async function createAgent(e) {
+  e.preventDefault();
+  const btn = document.getElementById('create-btn');
+  btn.disabled = true;
+  btn.textContent = 'Creating...';
+
+  try {
+    const resp = await fetch('/api/agents/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        owner_telegram_id: OWNER_TELEGRAM_ID,
+        name: document.getElementById('agent-name').value,
+        description: document.getElementById('agent-desc').value,
+        soul_text: document.getElementById('agent-soul').value,
+      }),
+    });
+    if (!resp.ok) {
+      const err = await resp.json();
+      alert(err.detail || 'Failed to create agent');
+      return;
+    }
+    document.getElementById('create-modal').close();
+    document.getElementById('create-form').reset();
+    loadMyAgents();
+  } catch {
+    alert('Network error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Create';
+  }
+}
+
+loadMyAgents();
+</script>
+{% endblock %}

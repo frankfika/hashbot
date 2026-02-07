@@ -1,6 +1,6 @@
 """A2A Protocol message types based on Google A2A specification."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from typing import Any, Literal
 from uuid import uuid4
@@ -60,18 +60,18 @@ class Task(BaseModel):
     history: list[Message] = Field(default_factory=list)
     artifacts: list[dict[str, Any]] = Field(default_factory=list)
     metadata: dict[str, Any] = Field(default_factory=dict)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     def add_message(self, role: Literal["user", "agent"], text: str) -> None:
         """Add a text message to history."""
         self.history.append(Message(role=role, parts=[TextPart(text=text)]))
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now(UTC)
 
     def add_data(self, role: Literal["user", "agent"], data: dict[str, Any]) -> None:
         """Add structured data to history."""
         self.history.append(Message(role=role, parts=[DataPart(data=data)]))
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now(UTC)
 
 
 class Skill(BaseModel):

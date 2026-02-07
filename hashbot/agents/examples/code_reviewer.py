@@ -2,9 +2,9 @@
 
 from typing import Any
 
+from hashbot.a2a.messages import Task
 from hashbot.agents.base import BaseAgent, agent_card
 from hashbot.agents.registry import register_agent
-from hashbot.a2a.messages import Task
 
 
 @register_agent("code_reviewer")

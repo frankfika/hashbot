@@ -1,7 +1,6 @@
 """Tests for A2A Protocol implementation."""
 
-import pytest
-from hashbot.a2a.messages import Task, TaskState, AgentCard, TextPart, Message
+from hashbot.a2a.messages import AgentCard, Task, TaskState
 
 
 class TestTask:

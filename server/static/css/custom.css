@@ -1,0 +1,90 @@
+/* HashBot Dashboard - Custom Styles */
+
+/* Smooth scrolling for chat */
+#chat-messages {
+  scroll-behavior: smooth;
+}
+
+/* Chat bubble markdown content */
+.chat-bubble h1,
+.chat-bubble h2,
+.chat-bubble h3 {
+  font-weight: 700;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.chat-bubble h1 { font-size: 1.25rem; }
+.chat-bubble h2 { font-size: 1.125rem; }
+.chat-bubble h3 { font-size: 1rem; }
+
+.chat-bubble ul,
+.chat-bubble ol {
+  padding-left: 1.25rem;
+  margin: 0.25rem 0;
+}
+
+.chat-bubble ul { list-style-type: disc; }
+.chat-bubble ol { list-style-type: decimal; }
+
+.chat-bubble code {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+.chat-bubble pre {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+}
+
+.chat-bubble pre code {
+  background: none;
+  padding: 0;
+}
+
+.chat-bubble hr {
+  border-color: rgba(255, 255, 255, 0.15);
+  margin: 0.5rem 0;
+}
+
+.chat-bubble p {
+  margin: 0.25rem 0;
+}
+
+.chat-bubble table {
+  border-collapse: collapse;
+  margin: 0.5rem 0;
+  font-size: 0.875em;
+}
+
+.chat-bubble th,
+.chat-bubble td {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.25rem 0.5rem;
+}
+
+/* Payment info card in chat */
+.payment-info {
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* Typing indicator */
+.typing-indicator span {
+  animation: blink 1.4s infinite both;
+}
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0; }
+  40% { opacity: 1; }
+}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}HashBot - Skills for {{ agent.name }}{% endblock %}
+
+{% block content %}
+<div class="flex items-center gap-4 mb-6">
+  <a href="/dashboard/my-agents/{{ agent.id }}" class="btn btn-ghost btn-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+  </a>
+  <div>
+    <h1 class="text-2xl font-bold">Skills — {{ agent.name }}</h1>
+    <p class="text-sm opacity-60">Install or remove skills to customize your agent</p>
+  </div>
+</div>
+
+<!-- Installed Skills -->
+<h2 class="text-xl font-bold mb-3">Installed Skills</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8" id="installed-grid">
+  <div class="col-span-full text-center py-8 opacity-60">
+    <span class="loading loading-spinner loading-md"></span>
+  </div>
+</div>
+
+<!-- Available Skills -->
+<h2 class="text-xl font-bold mb-3">Available Skills</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="available-grid">
+  <div class="col-span-full text-center py-8 opacity-60">
+    <span class="loading loading-spinner loading-md"></span>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const AGENT_ID = "{{ agent.id }}";
+
+async function loadSkills() {
+  try {
+    const resp = await fetch(`/api/agents/${AGENT_ID}/skills`);
+    const data = await resp.json();
+
+    // Installed
+    const ig = document.getElementById('installed-grid');
+    if (data.installed.length === 0) {
+      ig.innerHTML = '<div class="col-span-full text-center py-6 opacity-60">No skills installed yet</div>';
+    } else {
+      ig.innerHTML = '';
+      data.installed.forEach(s => {
+        const card = document.createElement('div');
+        card.className = 'card bg-base-100 shadow';
+        card.innerHTML = `
+          <div class="card-body">
+            <div class="flex items-start justify-between">
+              <h3 class="card-title text-sm">${s.slug}</h3>
+              <span class="badge badge-success badge-xs">${s.source}</span>
+            </div>
+            <div class="card-actions justify-end mt-2">
+              <button class="btn btn-error btn-xs" onclick="removeSkill('${s.slug}')">Remove</button>
+            </div>
+          </div>`;
+        ig.appendChild(card);
+      });
+    }
+
+    // Available
+    const ag = document.getElementById('available-grid');
+    if (data.available.length === 0) {
+      ag.innerHTML = '<div class="col-span-full text-center py-6 opacity-60">All skills installed!</div>';
+    } else {
+      ag.innerHTML = '';
+      data.available.forEach(s => {
+        const card = document.createElement('div');
+        card.className = 'card bg-base-100 shadow';
+        card.innerHTML = `
+          <div class="card-body">
+            <h3 class="card-title text-sm">${s.name}</h3>
+            <p class="text-xs opacity-60">${s.description}</p>
+            <div class="card-actions justify-end mt-2">
+              <button class="btn btn-primary btn-xs" onclick="installSkill('${s.slug}')">Install</button>
+            </div>
+          </div>`;
+        ag.appendChild(card);
+      });
+    }
+  } catch {
+    document.getElementById('installed-grid').innerHTML = '<div class="col-span-full alert alert-error">Failed to load skills</div>';
+  }
+}
+
+async function installSkill(slug) {
+  const resp = await fetch(`/api/agents/${AGENT_ID}/skills`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ slug }),
+  });
+  if (resp.ok) loadSkills();
+  else alert('Failed to install skill');
+}
+
+async function removeSkill(slug) {
+  const resp = await fetch(`/api/agents/${AGENT_ID}/skills/${slug}`, { method: 'DELETE' });
+  if (resp.ok) loadSkills();
+  else alert('Failed to remove skill');
+}
+
+loadSkills();
+</script>
+{% endblock %}

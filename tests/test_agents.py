@@ -1,11 +1,12 @@
 """Tests for Agent framework."""
 
-import pytest
 from decimal import Decimal
 
+import pytest
+
+from hashbot.a2a.messages import Task
 from hashbot.agents.base import BaseAgent, agent_card
 from hashbot.agents.registry import AgentRegistry
-from hashbot.a2a.messages import Task
 
 
 @agent_card(

@@ -2,12 +2,13 @@
 
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Request
 from pydantic import BaseModel
 
-from hashbot.a2a.messages import Task, Message, TextPart
+from hashbot.a2a.messages import Message, Task, TextPart
 from hashbot.agents.registry import get_registry
 from hashbot.config import get_settings
+from hashbot.db import crud
 
 router = APIRouter()
 
@@ -90,7 +91,12 @@ async def _handle_tasks_send(request_id: str, params: dict[str, Any]) -> dict[st
     # Determine which agent to use
     agent_id = metadata.get("skill_id", "crypto_analyst")
 
-    # Check if agent exists
+    # Check if this is a user-created (OpenClaw) agent in the DB
+    db_agent = await crud.get_agent_by_id(agent_id)
+    if db_agent and db_agent.openclaw_agent_id:
+        return await _handle_openclaw_task(request_id, db_agent, message_data, session_id)
+
+    # Fall back to built-in registry
     if agent_id not in [a["id"] for a in registry.list_agents()]:
         # Try first available agent
         agents = registry.list_agents()
@@ -126,6 +132,58 @@ async def _handle_tasks_send(request_id: str, params: dict[str, Any]) -> dict[st
         "id": request_id,
         "result": result,
     }
+
+
+async def _handle_openclaw_task(
+    request_id: str,
+    db_agent,
+    message_data: dict[str, Any],
+    session_id: str | None,
+) -> dict[str, Any]:
+    """Route a task to an OpenClaw agent."""
+    from hashbot.openclaw.client import OpenClawClient
+
+    # Extract user text
+    text = ""
+    for part in message_data.get("parts", []):
+        if part.get("type") == "text":
+            text += part.get("text", "")
+
+    if not text:
+        return {
+            "jsonrpc": "2.0",
+            "id": request_id,
+            "error": {"code": -32602, "message": "No text in message"},
+        }
+
+    client = OpenClawClient()
+    try:
+        response = await client.send_message(
+            db_agent.openclaw_agent_id,
+            session_id or f"a2a_{db_agent.id}",
+            text,
+        )
+        return {
+            "jsonrpc": "2.0",
+            "id": request_id,
+            "result": {
+                "id": request_id,
+                "sessionId": session_id,
+                "status": {"state": "completed"},
+                "history": [
+                    {"role": "user", "parts": [{"type": "text", "text": text}]},
+                    {"role": "agent", "parts": [{"type": "text", "text": response}]},
+                ],
+            },
+        }
+    except Exception as exc:
+        return {
+            "jsonrpc": "2.0",
+            "id": request_id,
+            "error": {"code": -32000, "message": f"OpenClaw error: {exc}"},
+        }
+    finally:
+        await client.close()
 
 
 async def _handle_tasks_get(request_id: str, params: dict[str, Any]) -> dict[str, Any]:

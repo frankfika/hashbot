@@ -1,15 +1,17 @@
 """Telegram Bot message handlers."""
 
+import re
 from decimal import Decimal
 from typing import Any
 
-from telegram import Update, InlineKeyboardMarkup
+from telegram import Update
+from telegram.constants import ChatAction
 from telegram.ext import (
     Application,
-    CommandHandler,
-    MessageHandler,
     CallbackQueryHandler,
+    CommandHandler,
     ContextTypes,
+    MessageHandler,
     filters,
 )
 
@@ -24,9 +26,11 @@ class HashBotHandler:
         self,
         agent_registry: Any | None = None,
         wallet_service: Any | None = None,
+        openclaw_client: Any | None = None,
     ):
         self.agent_registry = agent_registry
         self.wallet_service = wallet_service
+        self.openclaw_client = openclaw_client
         self.settings = get_settings()
 
     def setup(self, application: Application) -> None:
@@ -35,6 +39,9 @@ class HashBotHandler:
         application.add_handler(CommandHandler("start", self.start_command))
         application.add_handler(CommandHandler("help", self.help_command))
         application.add_handler(CommandHandler("agents", self.agents_command))
+        application.add_handler(CommandHandler("myagent", self.myagent_command))
+        application.add_handler(CommandHandler("explore", self.explore_command))
+        application.add_handler(CommandHandler("skills", self.skills_command))
         application.add_handler(CommandHandler("wallet", self.wallet_command))
         application.add_handler(CommandHandler("balance", self.balance_command))
         application.add_handler(CommandHandler("pay", self.pay_command))
@@ -53,25 +60,25 @@ class HashBotHandler:
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
         """Handle /start command."""
-        welcome_text = """
-🤖 **Welcome to HashBot!**
-
-Bot 用 Bot，自动付费 — Agent Economy on HashKey Chain
-
-**What I can do:**
-• `/agents` - Browse available AI agents
-• `/wallet` - Manage your wallet
-• `/balance` - Check your HKDC balance
-• `/pay` - Make a payment
-
-**How it works:**
-1. Choose an Agent to help you
-2. Agent requests payment (x402)
-3. Pay with HKDC stablecoin
-4. Get your result!
-
-Start by exploring `/agents` 👇
-        """
+        welcome_text = (
+            "\U0001f916 **Welcome to HashBot!**\n"
+            "\n"
+            "Bot \u7528 Bot\uff0c\u81ea\u52a8\u4ed8\u8d39 \u2014 Agent Economy on HashKey Chain\n"
+            "\n"
+            "**What I can do:**\n"
+            "\u2022 `/agents` - Browse available AI agents\n"
+            "\u2022 `/wallet` - Manage your wallet\n"
+            "\u2022 `/balance` - Check your HKDC balance\n"
+            "\u2022 `/pay` - Make a payment\n"
+            "\n"
+            "**How it works:**\n"
+            "1. Choose an Agent to help you\n"
+            "2. Agent requests payment (x402)\n"
+            "3. Pay with HKDC stablecoin\n"
+            "4. Get your result!\n"
+            "\n"
+            "Start by exploring `/agents` \U0001f447"
+        )
         await update.message.reply_text(
             welcome_text,
             parse_mode="Markdown",
@@ -82,41 +89,37 @@ Start by exploring `/agents` 👇
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
         """Handle /help command."""
-        help_text = """
-📖 **HashBot Help**
-
-**Commands:**
-• `/start` - Start the bot
-• `/agents` - List available agents
-• `/wallet` - Wallet management
-• `/balance` - Check HKDC balance
-• `/pay <address> <amount>` - Send HKDC
-
-**About x402 Payments:**
-When you use a paid agent, it will request payment automatically.
-You'll see the price before confirming.
-
-**About A2A Protocol:**
-HashBot uses Google's A2A protocol for agent communication.
-Your agents can be called by other agents too!
-
-**HashKey Chain:**
-All payments are settled on HashKey Chain with HKDC stablecoin.
-Low fees, fast confirmation, fully compliant.
-
-Need more help? Contact @hashbot_support
-        """
+        help_text = (
+            "\U0001f4d6 **HashBot Help**\n"
+            "\n"
+            "**Commands:**\n"
+            "\u2022 `/start` - Start the bot\n"
+            "\u2022 `/agents` - List available agents\n"
+            "\u2022 `/wallet` - Wallet management\n"
+            "\u2022 `/balance` - Check HKDC balance\n"
+            "\u2022 `/pay <address> <amount>` - Send HKDC\n"
+            "\n"
+            "**About x402 Payments:**\n"
+            "When you use a paid agent, it will request payment automatically.\n"
+            "You'll see the price before confirming.\n"
+            "\n"
+            "**About A2A Protocol:**\n"
+            "HashBot uses Google's A2A protocol for agent communication.\n"
+            "Your agents can be called by other agents too!\n"
+            "\n"
+            "**HashKey Chain:**\n"
+            "All payments are settled on HashKey Chain with HKDC stablecoin.\n"
+            "Low fees, fast confirmation, fully compliant.\n"
+            "\n"
+            "Need more help? Contact @hashbot_support"
+        )
         await update.message.reply_text(help_text, parse_mode="Markdown")
 
     async def agents_command(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
         """Handle /agents command."""
-        agents_text = """
-🤖 **Available Agents**
-
-Choose an agent to interact with:
-        """
+        agents_text = "\U0001f916 **Available Agents**\n\nChoose an agent to interact with:\n"
 
         # Get agents from registry if available
         agents = []
@@ -147,11 +150,11 @@ Choose an agent to interact with:
             ]
 
         for agent in agents:
-            agents_text += f"""
-**{agent['name']}** (`{agent['id']}`)
-{agent['description']}
-💰 {agent['price']} per call
-"""
+            agents_text += (
+                f"\n**{agent['name']}** (`{agent['id']}`)\n"
+                f"{agent['description']}\n"
+                f"\U0001f4b0 {agent['price']} per call\n"
+            )
 
         await update.message.reply_text(
             agents_text,
@@ -169,21 +172,22 @@ Choose an agent to interact with:
         wallet_info = await self._get_user_wallet(user_id)
 
         if wallet_info:
-            wallet_text = f"""
-💼 **Your Wallet**
-
-**Address:** `{wallet_info['address']}`
-**Network:** HashKey Chain {'Mainnet' if self.settings.hashkey_chain_id == 133 else 'Testnet'}
-
-Use `/balance` to check your HKDC balance.
-            """
+            network = "Mainnet" if self.settings.hashkey_chain_id == 133 else "Testnet"
+            wallet_text = (
+                "\U0001f4bc **Your Wallet**\n"
+                "\n"
+                f"**Address:** `{wallet_info['address']}`\n"
+                f"**Network:** HashKey Chain {network}\n"
+                "\n"
+                "Use `/balance` to check your HKDC balance."
+            )
         else:
-            wallet_text = """
-💼 **Wallet Setup**
-
-You don't have a wallet yet.
-Click below to create one or import existing.
-            """
+            wallet_text = (
+                "\U0001f4bc **Wallet Setup**\n"
+                "\n"
+                "You don't have a wallet yet.\n"
+                "Click below to create one or import existing."
+            )
 
         await update.message.reply_text(
             wallet_text,
@@ -200,7 +204,7 @@ Click below to create one or import existing.
 
         if not wallet_info:
             await update.message.reply_text(
-                "❌ No wallet found. Use /wallet to create one."
+                "\u274c No wallet found. Use /wallet to create one."
             )
             return
 
@@ -216,14 +220,14 @@ Click below to create one or import existing.
                 wallet_info["address"]
             )
 
-        balance_text = f"""
-💰 **Your Balance**
-
-**HKDC:** {hkdc_balance:.2f}
-**HSK:** {native_balance:.6f}
-
-Address: `{wallet_info['address']}`
-        """
+        balance_text = (
+            "\U0001f4b0 **Your Balance**\n"
+            "\n"
+            f"**HKDC:** {hkdc_balance:.2f}\n"
+            f"**HSK:** {native_balance:.6f}\n"
+            "\n"
+            f"Address: `{wallet_info['address']}`"
+        )
 
         await update.message.reply_text(balance_text, parse_mode="Markdown")
 
@@ -242,10 +246,19 @@ Address: `{wallet_info['address']}`
             return
 
         to_address = args[0]
+
+        # Validate Ethereum address format
+        if not re.fullmatch(r"0x[0-9a-fA-F]{40}", to_address):
+            await update.message.reply_text(
+                "\u274c Invalid address. Must be a valid Ethereum address "
+                "(0x followed by 40 hex characters)."
+            )
+            return
+
         try:
             amount = Decimal(args[1])
-        except ValueError:
-            await update.message.reply_text("❌ Invalid amount")
+        except Exception:
+            await update.message.reply_text("\u274c Invalid amount")
             return
 
         # Confirm payment
@@ -263,7 +276,6 @@ Address: `{wallet_info['address']}`
     ) -> None:
         """Handle regular text messages."""
         text = update.message.text
-        user_id = update.effective_user.id
 
         # Check if user is in an agent session
         session = context.user_data.get("agent_session")
@@ -291,6 +303,21 @@ Address: `{wallet_info['address']}`
             agent_id = data.split(":")[1]
             await self._start_agent_session(query, context, agent_id)
 
+        elif data.startswith("agent_new:"):
+            agent_id = data.split(":")[1]
+            await self._start_agent_session(query, context, agent_id)
+
+        elif data == "agent_exit":
+            context.user_data.pop("agent_session", None)
+            await query.edit_message_text(
+                "Session ended. Use /agents to start a new one.",
+                reply_markup=InlineKeyboards.main_menu(),
+            )
+
+        elif data.startswith("menu:"):
+            section = data.split(":")[1]
+            await self._handle_menu_callback(query, context, section)
+
         elif data.startswith("pay_confirm:"):
             parts = data.split(":")
             to_address = parts[1]
@@ -298,7 +325,21 @@ Address: `{wallet_info['address']}`
             await self._execute_payment(query, context, to_address, amount)
 
         elif data == "pay_cancel":
-            await query.edit_message_text("❌ Payment cancelled.")
+            await query.edit_message_text("\u274c Payment cancelled.")
+
+        elif data.startswith("x402_pay:"):
+            task_id = data.split(":")[1]
+            await query.edit_message_text(
+                f"\u23f3 Processing x402 payment for task `{task_id}`...",
+                parse_mode="Markdown",
+            )
+
+        elif data.startswith("x402_cancel:"):
+            task_id = data.split(":")[1]
+            await query.edit_message_text(
+                f"\u274c Payment for task `{task_id}` cancelled.",
+                parse_mode="Markdown",
+            )
 
         elif data == "wallet_create":
             await self._create_wallet(query, context)
@@ -306,14 +347,189 @@ Address: `{wallet_info['address']}`
         elif data == "wallet_import":
             await query.edit_message_text(
                 "Send your private key to import wallet.\n"
-                "⚠️ Make sure you're in a private chat!"
+                "\u26a0\ufe0f Make sure you're in a private chat!"
             )
             context.user_data["awaiting_private_key"] = True
+
+        elif data.startswith("wallet:"):
+            action = data.split(":")[1]
+            await self._handle_wallet_callback(query, context, action)
 
         elif data == "menu":
             await query.edit_message_text(
                 "Choose an option:",
                 reply_markup=InlineKeyboards.main_menu(),
+            )
+
+    async def _handle_menu_callback(
+        self,
+        query: Any,
+        context: ContextTypes.DEFAULT_TYPE,
+        section: str,
+    ) -> None:
+        """Route main menu button presses."""
+        if section == "agents":
+            agents = []
+            if self.agent_registry:
+                agents = self.agent_registry.list_agents()
+
+            if not agents:
+                agents = [
+                    {"id": "crypto_analyst", "name": "Crypto Analyst",
+                     "description": "Token analysis and market insights", "price": "0.1 HKDC"},
+                    {"id": "translator", "name": "AI Translator",
+                     "description": "Multi-language translation", "price": "0.05 HKDC"},
+                    {"id": "code_reviewer", "name": "Code Reviewer",
+                     "description": "Smart contract audit", "price": "0.5 HKDC"},
+                ]
+
+            text = "\U0001f916 **Available Agents**\n\nChoose an agent to interact with:\n"
+            for agent in agents:
+                text += (
+                    f"\n**{agent['name']}** (`{agent['id']}`)\n"
+                    f"{agent['description']}\n"
+                    f"\U0001f4b0 {agent['price']} per call\n"
+                )
+            await query.edit_message_text(
+                text,
+                parse_mode="Markdown",
+                reply_markup=InlineKeyboards.agent_list(agents),
+            )
+
+        elif section == "wallet":
+            user_id = query.from_user.id
+            wallet_info = await self._get_user_wallet(user_id)
+
+            if wallet_info:
+                network = "Mainnet" if self.settings.hashkey_chain_id == 133 else "Testnet"
+                wallet_text = (
+                    "\U0001f4bc **Your Wallet**\n"
+                    "\n"
+                    f"**Address:** `{wallet_info['address']}`\n"
+                    f"**Network:** HashKey Chain {network}\n"
+                    "\n"
+                    "Use `/balance` to check your HKDC balance."
+                )
+            else:
+                wallet_text = (
+                    "\U0001f4bc **Wallet Setup**\n"
+                    "\n"
+                    "You don't have a wallet yet.\n"
+                    "Click below to create one or import existing."
+                )
+
+            await query.edit_message_text(
+                wallet_text,
+                parse_mode="Markdown",
+                reply_markup=InlineKeyboards.wallet_menu(has_wallet=bool(wallet_info)),
+            )
+
+        elif section == "balance":
+            user_id = query.from_user.id
+            wallet_info = await self._get_user_wallet(user_id)
+
+            if not wallet_info:
+                await query.edit_message_text(
+                    "\u274c No wallet found. Use /wallet to create one.",
+                    reply_markup=InlineKeyboards.main_menu(),
+                )
+                return
+
+            hkdc_balance = Decimal("0.00")
+            native_balance = Decimal("0.00")
+
+            if self.wallet_service:
+                hkdc_balance = await self.wallet_service.get_hkdc_balance(
+                    wallet_info["address"]
+                )
+                native_balance = await self.wallet_service.get_native_balance(
+                    wallet_info["address"]
+                )
+
+            balance_text = (
+                "\U0001f4b0 **Your Balance**\n"
+                "\n"
+                f"**HKDC:** {hkdc_balance:.2f}\n"
+                f"**HSK:** {native_balance:.6f}\n"
+                "\n"
+                f"Address: `{wallet_info['address']}`"
+            )
+            await query.edit_message_text(balance_text, parse_mode="Markdown")
+
+        elif section == "help":
+            help_text = (
+                "\U0001f4d6 **HashBot Help**\n"
+                "\n"
+                "**Commands:**\n"
+                "\u2022 `/start` - Start the bot\n"
+                "\u2022 `/agents` - List available agents\n"
+                "\u2022 `/wallet` - Wallet management\n"
+                "\u2022 `/balance` - Check HKDC balance\n"
+                "\u2022 `/pay <address> <amount>` - Send HKDC\n"
+                "\n"
+                "**About x402 Payments:**\n"
+                "When you use a paid agent, it will request payment automatically.\n"
+                "You'll see the price before confirming.\n"
+                "\n"
+                "**About A2A Protocol:**\n"
+                "HashBot uses Google's A2A protocol for agent communication.\n"
+                "Your agents can be called by other agents too!\n"
+                "\n"
+                "**HashKey Chain:**\n"
+                "All payments are settled on HashKey Chain with HKDC stablecoin.\n"
+                "Low fees, fast confirmation, fully compliant.\n"
+                "\n"
+                "Need more help? Contact @hashbot_support"
+            )
+            await query.edit_message_text(help_text, parse_mode="Markdown")
+
+    async def _handle_wallet_callback(
+        self,
+        query: Any,
+        context: ContextTypes.DEFAULT_TYPE,
+        action: str,
+    ) -> None:
+        """Handle wallet:* callbacks."""
+        user_id = query.from_user.id
+        wallet_info = await self._get_user_wallet(user_id)
+
+        if not wallet_info:
+            await query.edit_message_text(
+                "\u274c No wallet found. Use /wallet to create one.",
+                reply_markup=InlineKeyboards.main_menu(),
+            )
+            return
+
+        if action == "balance":
+            hkdc_balance = Decimal("0.00")
+            native_balance = Decimal("0.00")
+
+            if self.wallet_service:
+                hkdc_balance = await self.wallet_service.get_hkdc_balance(
+                    wallet_info["address"]
+                )
+                native_balance = await self.wallet_service.get_native_balance(
+                    wallet_info["address"]
+                )
+
+            await query.edit_message_text(
+                f"\U0001f4b0 **HKDC:** {hkdc_balance:.2f}\n"
+                f"**HSK:** {native_balance:.6f}",
+                parse_mode="Markdown",
+            )
+        elif action == "address":
+            await query.edit_message_text(
+                f"\U0001f4cb **Your Address:**\n`{wallet_info['address']}`",
+                parse_mode="Markdown",
+            )
+        elif action == "send":
+            await query.edit_message_text(
+                "Use `/pay <address> <amount>` to send HKDC.",
+                parse_mode="Markdown",
+            )
+        elif action == "export":
+            await query.edit_message_text(
+                "\u26a0\ufe0f Private key export is not yet supported."
             )
 
     async def _get_user_wallet(self, user_id: int) -> dict[str, Any] | None:
@@ -329,10 +545,20 @@ Address: `{wallet_info['address']}`
         text: str,
     ) -> None:
         """Handle message in agent session."""
-        await update.message.reply_text(
-            f"[{session['agent_name']}] Processing your request..."
-        )
-        # TODO: Implement A2A protocol call
+        await update.message.chat.send_action(ChatAction.TYPING)
+
+        try:
+            await update.message.reply_text(
+                f"[{session['agent_name']}] Processing your request...",
+                reply_markup=InlineKeyboards.agent_session(session["agent_id"]),
+            )
+            # TODO: Implement A2A protocol call
+        except Exception:
+            await update.message.reply_text(
+                f"\u274c Error communicating with {session['agent_name']}. "
+                "Please try again or /agents to pick a different agent.",
+                reply_markup=InlineKeyboards.agent_session(session["agent_id"]),
+            )
 
     async def _start_agent_session(
         self,
@@ -341,15 +567,17 @@ Address: `{wallet_info['address']}`
         agent_id: str,
     ) -> None:
         """Start a new agent session."""
+        agent_name = agent_id.replace("_", " ").title()
         context.user_data["agent_session"] = {
             "agent_id": agent_id,
-            "agent_name": agent_id.replace("_", " ").title(),
+            "agent_name": agent_name,
         }
 
         await query.edit_message_text(
-            f"✅ Connected to **{agent_id.replace('_', ' ').title()}**\n\n"
+            f"\u2705 Connected to **{agent_name}**\n\n"
             "Send your message to start.",
             parse_mode="Markdown",
+            reply_markup=InlineKeyboards.agent_session(agent_id),
         )
 
     async def _execute_payment(
@@ -361,12 +589,12 @@ Address: `{wallet_info['address']}`
     ) -> None:
         """Execute a payment."""
         await query.edit_message_text(
-            f"⏳ Processing payment of {amount} HKDC..."
+            f"\u23f3 Processing payment of {amount} HKDC..."
         )
 
         # TODO: Implement actual payment via HashKey Chain
         await query.edit_message_text(
-            f"✅ Payment successful!\n\n"
+            f"\u2705 Payment successful!\n\n"
             f"Amount: {amount} HKDC\n"
             f"To: `{to_address}`\n"
             f"TX: `0x...`",
@@ -381,8 +609,8 @@ Address: `{wallet_info['address']}`
         """Create a new wallet for user."""
         # TODO: Implement secure wallet creation
         await query.edit_message_text(
-            "✅ Wallet created!\n\n"
+            "\u2705 Wallet created!\n\n"
             "Address: `0x...`\n\n"
-            "⚠️ Save your recovery phrase securely!",
+            "\u26a0\ufe0f Save your recovery phrase securely!",
             parse_mode="Markdown",
         )

@@ -1,6 +1,6 @@
 """x402 Payment data structures and types."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 from enum import Enum
 from typing import Any
@@ -69,7 +69,7 @@ class PaymentPayload(BaseModel):
 
     # Metadata
     nonce: str
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class PaymentReceipt(BaseModel):
@@ -84,7 +84,7 @@ class PaymentReceipt(BaseModel):
     amount: str
     asset: str
     block_number: int | None = None
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     error: str | None = None
 
 
@@ -121,7 +121,7 @@ class PaymentConfig(BaseModel):
     def to_requirements(self) -> PaymentRequirements:
         """Convert config to payment requirements."""
         # Convert price to base units
-        amount_base = int(self.price * (10**self.asset_decimals))
+        amount_base = int(self.price * Decimal(10) ** self.asset_decimals)
 
         return PaymentRequirements(
             network=self.network,

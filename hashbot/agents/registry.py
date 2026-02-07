@@ -1,19 +1,19 @@
 """Agent registry for managing available agents."""
 
-from typing import Any, Type
+from typing import Any
 
-from hashbot.agents.base import BaseAgent
 from hashbot.a2a.messages import AgentCard, Task
+from hashbot.agents.base import BaseAgent
 
 
 class AgentRegistry:
     """Registry for managing and discovering agents."""
 
     def __init__(self):
-        self._agents: dict[str, Type[BaseAgent]] = {}
+        self._agents: dict[str, type[BaseAgent]] = {}
         self._instances: dict[str, BaseAgent] = {}
 
-    def register(self, agent_id: str, agent_class: Type[BaseAgent]) -> None:
+    def register(self, agent_id: str, agent_class: type[BaseAgent]) -> None:
         """Register an agent class."""
         self._agents[agent_id] = agent_class
 
@@ -24,7 +24,7 @@ class AgentRegistry:
         if agent_id in self._instances:
             del self._instances[agent_id]
 
-    def get_agent_class(self, agent_id: str) -> Type[BaseAgent] | None:
+    def get_agent_class(self, agent_id: str) -> type[BaseAgent] | None:
         """Get agent class by ID."""
         return self._agents.get(agent_id)
 
@@ -117,7 +117,7 @@ def get_registry() -> AgentRegistry:
 def register_agent(agent_id: str):
     """Decorator to register an agent class."""
 
-    def decorator(cls: Type[BaseAgent]) -> Type[BaseAgent]:
+    def decorator(cls: type[BaseAgent]) -> type[BaseAgent]:
         get_registry().register(agent_id, cls)
         return cls
 

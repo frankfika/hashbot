@@ -1,10 +1,8 @@
 """Webhook endpoints for Telegram and other integrations."""
 
-import json
-from typing import Any
+import logging
 
-from fastapi import APIRouter, Request, HTTPException
-from telegram import Update
+from fastapi import APIRouter, HTTPException, Request
 
 from hashbot.config import get_settings
 
@@ -20,14 +18,15 @@ async def telegram_webhook(request: Request):
         raise HTTPException(status_code=503, detail="Telegram not configured")
 
     try:
-        data = await request.json()
+        await request.json()  # validate JSON body
 
         # In production, this would be handled by python-telegram-bot
         # For now, just acknowledge receipt
         return {"ok": True}
 
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception:
+        logging.exception("Telegram webhook error")
+        raise HTTPException(status_code=400, detail="Invalid request")
 
 
 @router.post("/x402/payment")
@@ -39,7 +38,7 @@ async def x402_payment_webhook(request: Request):
         # Extract payment info
         task_id = data.get("taskId")
         payment_payload = data.get("payload")
-        status = data.get("status")
+        _ = data.get("status")  # reserved for future use
 
         if not task_id or not payment_payload:
             raise HTTPException(status_code=400, detail="Missing required fields")
@@ -62,5 +61,6 @@ async def x402_payment_webhook(request: Request):
 
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logging.exception("x402 payment webhook error")
+        raise HTTPException(status_code=500, detail="Internal server error")

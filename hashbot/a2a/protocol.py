@@ -1,7 +1,8 @@
 """A2A Protocol core implementation."""
 
-import httpx
 from typing import Any
+
+import httpx
 
 from hashbot.a2a.messages import (
     A2AMessage,
@@ -9,7 +10,6 @@ from hashbot.a2a.messages import (
     AgentCard,
     Task,
     TaskState,
-    TextPart,
 )
 
 

@@ -1,13 +1,14 @@
 """A2A Protocol executor for handling incoming requests."""
 
-from typing import Any, Callable, Awaitable
+from collections.abc import Awaitable, Callable
+from typing import Any
+
 from hashbot.a2a.messages import (
     A2AMessage,
-    A2AResponse,
     AgentCard,
+    Message,
     Task,
     TaskState,
-    Message,
     TextPart,
 )
 from hashbot.a2a.protocol import A2AProtocol

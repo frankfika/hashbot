@@ -43,7 +43,7 @@ class PaymentVerifier:
             # TODO: Implement proper EIP-712 verification
             return True, None
 
-        except Exception as e:
+        except Exception:
             return False, None
 
     def verify_payment_params(

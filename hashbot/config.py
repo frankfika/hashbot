@@ -47,11 +47,24 @@ class Settings(BaseSettings):
     # Database
     database_url: str = Field(default="sqlite+aiosqlite:///./hashbot.db")
 
+    # OpenClaw Gateway
+    openclaw_gateway_url: str = Field(default="http://localhost:18789")
+    openclaw_gateway_token: str = Field(default="")
+    openclaw_workspaces_dir: str = Field(default="~/.hashbot/workspaces")
+
+    # Agent defaults
+    default_agent_model: str = Field(default="claude-sonnet-4-20250514")
+    max_agents_per_user: int = Field(default=3)
+
+    # Wallet encryption
+    wallet_encryption_key: str = Field(default="")  # Fernet key
+
     # Security
     api_secret_key: str = Field(default="")
     jwt_secret: str = Field(default="")
     jwt_algorithm: str = Field(default="HS256")
     jwt_expire_minutes: int = Field(default=60)
+    cors_origins: list[str] = Field(default=["*"])
 
     # Logging
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = Field(default="INFO")
