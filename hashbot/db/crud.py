@@ -290,3 +290,143 @@ class AgentSkillCRUD:
         await db.delete(skill)
         await db.commit()
         return True
+
+
+# ── Module-level convenience functions ────────────────────────────────
+# These auto-manage DB sessions so callers don't need to.
+
+_user_crud = UserCRUD()
+_agent_crud = AgentCRUD()
+_wallet_crud = WalletCRUD()
+_task_crud = TaskCRUD()
+_skill_crud = AgentSkillCRUD()
+
+
+def _get_session() -> AsyncSession:
+    """Get a new async session from the engine."""
+    from hashbot.db.engine import get_db
+    return get_db()
+
+
+# ── User helpers ──────────────────────────────────────────────────────
+
+async def get_user_by_telegram_id(telegram_id: int) -> User | None:
+    async with _get_session() as db:
+        return await _user_crud.get_by_telegram_id(db, telegram_id)
+
+
+async def get_or_create_user(
+    telegram_id: int,
+    username: str | None = None,
+    display_name: str = "",
+) -> User:
+    async with _get_session() as db:
+        return await _user_crud.get_or_create(db, telegram_id, username, display_name)
+
+
+# ── Agent helpers ─────────────────────────────────────────────────────
+
+async def get_agent_by_id(agent_id: str) -> Agent | None:
+    async with _get_session() as db:
+        return await _agent_crud.get_by_id(db, agent_id)
+
+
+async def get_public_agents() -> list[Agent]:
+    async with _get_session() as db:
+        return await _agent_crud.get_public_agents(db)
+
+
+async def get_user_agents(owner_id: int) -> list[Agent]:
+    async with _get_session() as db:
+        return await _agent_crud.get_by_owner(db, owner_id)
+
+
+async def create_agent(
+    owner_id: int,
+    name: str,
+    description: str = "",
+    openclaw_agent_id: str = "",
+    workspace_path: str = "",
+    price_per_call: float = 0.0,
+    is_public: bool = False,
+) -> Agent:
+    async with _get_session() as db:
+        return await _agent_crud.create(
+            db, owner_id, name, description,
+            openclaw_agent_id, workspace_path, price_per_call, is_public,
+        )
+
+
+async def update_agent(agent_id: str, **kwargs: Any) -> Agent | None:
+    async with _get_session() as db:
+        return await _agent_crud.update(db, agent_id, **kwargs)
+
+
+async def delete_agent(agent_id: str) -> bool:
+    async with _get_session() as db:
+        return await _agent_crud.delete(db, agent_id)
+
+
+# ── Wallet helpers ────────────────────────────────────────────────────
+
+async def get_user_wallet(user_id: int) -> Wallet | None:
+    async with _get_session() as db:
+        return await _wallet_crud.get_by_user_id(db, user_id)
+
+
+async def get_wallet_by_telegram_id(telegram_id: int) -> Wallet | None:
+    async with _get_session() as db:
+        user = await _user_crud.get_by_telegram_id(db, telegram_id)
+        if not user:
+            return None
+        return await _wallet_crud.get_by_user_id(db, user.id)
+
+
+async def get_or_create_wallet(
+    user_id: int,
+    address: str,
+    encrypted_key: str,
+) -> Wallet:
+    async with _get_session() as db:
+        existing = await _wallet_crud.get_by_user_id(db, user_id)
+        if existing:
+            return existing
+        return await _wallet_crud.create(db, user_id, address, encrypted_key)
+
+
+# ── Payment helpers ───────────────────────────────────────────────────
+
+async def record_payment(
+    payer_user_id: int,
+    agent_id: str,
+    amount: float,
+    currency: str = "HKDC",
+) -> Payment:
+    async with _get_session() as db:
+        return await _task_crud.create_payment(db, payer_user_id, agent_id, amount, currency)
+
+
+async def complete_payment(payment_id: int, tx_hash: str) -> Payment | None:
+    async with _get_session() as db:
+        return await _task_crud.update_payment(db, payment_id, tx_hash=tx_hash, status="completed")
+
+
+# ── Skill helpers ─────────────────────────────────────────────────────
+
+async def get_agent_skills(agent_id: str) -> list[AgentSkill]:
+    async with _get_session() as db:
+        return await _skill_crud.get_agent_skills(db, agent_id)
+
+
+async def install_skill(
+    agent_id: str,
+    skill_slug: str,
+    source: str = "builtin",
+) -> AgentSkill:
+    async with _get_session() as db:
+        return await _skill_crud.add_skill(db, agent_id, skill_slug, source)
+
+
+async def remove_skill(agent_id: str, skill_slug: str) -> bool:
+    async with _get_session() as db:
+        return await _skill_crud.remove_skill(db, agent_id, skill_slug)
