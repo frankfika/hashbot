@@ -70,9 +70,10 @@ async def list_user_agents(telegram_id: int):
 @router.post("/")
 async def create_agent(req: CreateAgentRequest):
     """Create a new agent with OpenClaw workspace."""
-    user = await crud.get_user_by_telegram_id(req.owner_telegram_id)
-    if user is None:
-        raise HTTPException(404, "User not found")
+    user = await crud.get_or_create_user(
+        telegram_id=req.owner_telegram_id,
+        display_name="Dashboard User",
+    )
 
     # Check limit
     existing = await crud.get_user_agents(user.id)
