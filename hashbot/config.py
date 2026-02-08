@@ -58,6 +58,10 @@ class Settings(BaseSettings):
 
     # Wallet encryption
     wallet_encryption_key: str = Field(default="")  # Fernet key
+    wallet_encryption_secret: str = Field(default="hashbot-wallet-secret")
+
+    # Platform wallet (for payment settlement)
+    platform_private_key: str = Field(default="")
 
     # Security
     api_secret_key: str = Field(default="")

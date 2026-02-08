@@ -17,6 +17,13 @@ from telegram.ext import (
 
 from hashbot.bot.keyboards import InlineKeyboards
 from hashbot.config import get_settings
+from hashbot.db.crud import UserCRUD, AgentCRUD, TaskCRUD
+from hashbot.db.database import get_db
+from hashbot.services.wallet_service import WalletService
+from hashbot.services.payment_service import PaymentService
+from hashbot.openclaw.client import OpenClawClient
+from hashbot.openclaw.manager import OpenClawManager
+from hashbot.openclaw.skills import list_skills, get_skill
 
 
 class HashBotHandler:
@@ -25,13 +32,18 @@ class HashBotHandler:
     def __init__(
         self,
         agent_registry: Any | None = None,
-        wallet_service: Any | None = None,
-        openclaw_client: Any | None = None,
+        wallet_service: WalletService | None = None,
+        openclaw_client: OpenClawClient | None = None,
     ):
         self.agent_registry = agent_registry
-        self.wallet_service = wallet_service
-        self.openclaw_client = openclaw_client
+        self.wallet_service = wallet_service or WalletService()
+        self.openclaw_client = openclaw_client or OpenClawClient()
+        self.openclaw_manager = OpenClawManager(self.openclaw_client)
+        self.payment_service = PaymentService(self.wallet_service)
         self.settings = get_settings()
+        self.user_crud = UserCRUD()
+        self.agent_crud = AgentCRUD()
+        self.task_crud = TaskCRUD()
 
     def setup(self, application: Application) -> None:
         """Register all handlers with the application."""
@@ -114,6 +126,89 @@ class HashBotHandler:
             "Need more help? Contact @hashbot_support"
         )
         await update.message.reply_text(help_text, parse_mode="Markdown")
+
+    async def myagent_command(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
+        """Handle /myagent command - create or manage user's own agent."""
+        user_id = update.effective_user.id
+
+        async for db in get_db():
+            # Check if user has an agent
+            agents = await self.agent_crud.get_by_owner(db, user_id)
+
+            if agents:
+                agent = agents[0]
+                agent_text = (
+                    f"\U0001f916 **Your Agent: {agent.name}**\n\n"
+                    f"**ID:** `{agent.agent_id}`\n"
+                    f"**Description:** {agent.description}\n"
+                    f"**Price:** {agent.price_per_call} HKDC per call\n\n"
+                    "Use /skills to manage agent skills."
+                )
+            else:
+                agent_text = (
+                    "\U0001f916 **Create Your Agent**\n\n"
+                    "You don't have an agent yet.\n"
+                    "Click below to create one!"
+                )
+
+        await update.message.reply_text(agent_text, parse_mode="Markdown")
+
+    async def explore_command(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
+        """Handle /explore command - explore agent marketplace."""
+        explore_text = (
+            "\U0001f50d **Explore Agent Marketplace**\n\n"
+            "Browse agents by category:\n\n"
+            "\U0001f4b9 **DeFi & Trading**\n"
+            "- Token swap agents\n"
+            "- Price analysis\n"
+            "- Portfolio management\n\n"
+            "\U0001f4dd **Content & Creative**\n"
+            "- Translation\n"
+            "- Writing assistance\n"
+            "- Image generation\n\n"
+            "\U0001f4bb **Development**\n"
+            "- Code review\n"
+            "- Smart contract audit\n"
+            "- Bug detection\n\n"
+            "Use /agents to see all available agents."
+        )
+        await update.message.reply_text(explore_text, parse_mode="Markdown")
+
+    async def skills_command(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
+        """Handle /skills command - manage agent skills."""
+        user_id = update.effective_user.id
+
+        async for db in get_db():
+            agents = await self.agent_crud.get_by_owner(db, user_id)
+
+            if not agents:
+                await update.message.reply_text(
+                    "\u274c You don't have an agent yet. Use /myagent to create one."
+                )
+                return
+
+            # List available skills
+            available_skills = list_skills()
+            skills_text = (
+                "\U0001f6e0 **Available Skills**\n\n"
+                "Install skills to enhance your agent:\n\n"
+            )
+
+            for skill in available_skills:
+                skills_text += (
+                    f"**{skill['name']}** (`{skill['slug']}`)\n"
+                    f"{skill['description']}\n\n"
+                )
+
+            skills_text += "Reply with skill slug to install (e.g., `hsk-crypto-price`)"
+
+        await update.message.reply_text(skills_text, parse_mode="Markdown")
 
     async def agents_command(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -534,8 +629,14 @@ class HashBotHandler:
 
     async def _get_user_wallet(self, user_id: int) -> dict[str, Any] | None:
         """Get wallet for user."""
-        # Placeholder - implement with database
-        return None
+        async for db in get_db():
+            user = await self.user_crud.get_by_telegram_id(db, user_id)
+            if user and user.wallet_address:
+                return {
+                    "address": user.wallet_address,
+                    "encrypted_key": user.encrypted_private_key,
+                }
+            return None
 
     async def _handle_agent_message(
         self,
@@ -548,14 +649,34 @@ class HashBotHandler:
         await update.message.chat.send_action(ChatAction.TYPING)
 
         try:
-            await update.message.reply_text(
-                f"[{session['agent_name']}] Processing your request...",
-                reply_markup=InlineKeyboards.agent_session(session["agent_id"]),
+            # Get agent details
+            agent_id = session["agent_id"]
+            user_id = update.effective_user.id
+
+            # Create session key for OpenClaw
+            session_key = f"tg_{user_id}_{agent_id}"
+
+            # Send message to agent via OpenClaw
+            response = await self.openclaw_client.send_message(
+                agent_id=agent_id,
+                session_key=session_key,
+                text=text,
             )
-            # TODO: Implement A2A protocol call
-        except Exception:
+
+            if response:
+                await update.message.reply_text(
+                    response,
+                    reply_markup=InlineKeyboards.agent_session(agent_id),
+                )
+            else:
+                await update.message.reply_text(
+                    f"\u274c No response from {session['agent_name']}.",
+                    reply_markup=InlineKeyboards.agent_session(agent_id),
+                )
+
+        except Exception as e:
             await update.message.reply_text(
-                f"\u274c Error communicating with {session['agent_name']}. "
+                f"\u274c Error communicating with {session['agent_name']}: {str(e)}\n"
                 "Please try again or /agents to pick a different agent.",
                 reply_markup=InlineKeyboards.agent_session(session["agent_id"]),
             )
@@ -592,14 +713,36 @@ class HashBotHandler:
             f"\u23f3 Processing payment of {amount} HKDC..."
         )
 
-        # TODO: Implement actual payment via HashKey Chain
-        await query.edit_message_text(
-            f"\u2705 Payment successful!\n\n"
-            f"Amount: {amount} HKDC\n"
-            f"To: `{to_address}`\n"
-            f"TX: `0x...`",
-            parse_mode="Markdown",
-        )
+        try:
+            user_id = query.from_user.id
+            wallet_info = await self._get_user_wallet(user_id)
+
+            if not wallet_info:
+                await query.edit_message_text(
+                    "\u274c No wallet found. Use /wallet to create one."
+                )
+                return
+
+            # Execute payment via payment service
+            tx_hash = await self.payment_service.send_hkdc(
+                from_address=wallet_info["address"],
+                to_address=to_address,
+                amount=Decimal(amount),
+                encrypted_key=wallet_info["encrypted_key"],
+            )
+
+            await query.edit_message_text(
+                f"\u2705 Payment successful!\n\n"
+                f"Amount: {amount} HKDC\n"
+                f"To: `{to_address}`\n"
+                f"TX: `{tx_hash}`",
+                parse_mode="Markdown",
+            )
+
+        except Exception as e:
+            await query.edit_message_text(
+                f"\u274c Payment failed: {str(e)}"
+            )
 
     async def _create_wallet(
         self,
@@ -607,10 +750,41 @@ class HashBotHandler:
         context: ContextTypes.DEFAULT_TYPE,
     ) -> None:
         """Create a new wallet for user."""
-        # TODO: Implement secure wallet creation
-        await query.edit_message_text(
-            "\u2705 Wallet created!\n\n"
-            "Address: `0x...`\n\n"
-            "\u26a0\ufe0f Save your recovery phrase securely!",
-            parse_mode="Markdown",
-        )
+        try:
+            user_id = query.from_user.id
+            username = query.from_user.username or f"user_{user_id}"
+
+            # Create wallet via wallet service
+            wallet_data = await self.wallet_service.create_wallet(user_id)
+
+            # Save to database
+            async for db in get_db():
+                user = await self.user_crud.get_by_telegram_id(db, user_id)
+                if not user:
+                    user = await self.user_crud.create(
+                        db,
+                        telegram_id=user_id,
+                        username=username,
+                        wallet_address=wallet_data["address"],
+                        encrypted_private_key=wallet_data["encrypted_key"],
+                    )
+                else:
+                    await self.user_crud.update(
+                        db,
+                        user.id,
+                        wallet_address=wallet_data["address"],
+                        encrypted_private_key=wallet_data["encrypted_key"],
+                    )
+
+            await query.edit_message_text(
+                "\u2705 Wallet created!\n\n"
+                f"Address: `{wallet_data['address']}`\n\n"
+                "\u26a0\ufe0f Your wallet is encrypted and stored securely.\n"
+                "Use /balance to check your balance.",
+                parse_mode="Markdown",
+            )
+
+        except Exception as e:
+            await query.edit_message_text(
+                f"\u274c Failed to create wallet: {str(e)}"
+            )

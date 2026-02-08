@@ -22,6 +22,8 @@ class User(Base):
     telegram_id: Mapped[int] = mapped_column(unique=True, index=True)
     telegram_username: Mapped[str | None] = mapped_column(String(64))
     display_name: Mapped[str] = mapped_column(String(128), default="")
+    wallet_address: Mapped[str | None] = mapped_column(String(42))
+    encrypted_private_key: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     agents: Mapped[list["Agent"]] = relationship(back_populates="owner", cascade="all, delete")
