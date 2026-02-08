@@ -9,23 +9,23 @@
 {% block content %}
 <div class="flex flex-col h-[calc(100vh-12rem)] md:h-[calc(100vh-14rem)]">
   <!-- Agent header -->
-  <div class="flex items-center gap-4 mb-4">
-    <a href="/dashboard/agents" class="btn btn-ghost btn-sm">
+  <div class="flex items-center gap-4 mb-4 bg-white rounded-xl p-4 border border-slate-200/60 shadow-sm">
+    <a href="/dashboard/agents" class="btn btn-ghost btn-sm text-slate-600 hover:text-sky-600">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
     </a>
     <div>
-      <h1 class="text-xl font-bold">{{ agent.name }}</h1>
-      <p class="text-sm opacity-60">{{ agent.description }}</p>
+      <h1 class="text-xl font-bold text-slate-800">{{ agent.name }}</h1>
+      <p class="text-sm text-slate-500">{{ agent.description }}</p>
     </div>
     <div class="ml-auto">
-      <span class="badge {{ 'badge-success' if agent.price == 'Free' else 'badge-warning' }}">{{ agent.price }}</span>
+      <span class="px-3 py-1 rounded-full text-sm font-medium {{ 'bg-emerald-100 text-emerald-700' if agent.price == 'Free' else 'bg-amber-100 text-amber-700' }}">{{ agent.price }}</span>
     </div>
   </div>
 
   <!-- Chat messages -->
-  <div class="flex-1 overflow-y-auto bg-base-100 rounded-xl p-4 space-y-4" id="chat-messages">
+  <div class="flex-1 overflow-y-auto bg-white rounded-xl p-4 space-y-4 border border-slate-200/60 shadow-sm" id="chat-messages">
     <div class="chat chat-start">
-      <div class="chat-bubble chat-bubble-primary">
+      <div class="chat-bubble bg-gradient-to-r from-sky-500 to-indigo-500 text-white">
         Hello! I'm <strong>{{ agent.name }}</strong>. How can I help you today?
       </div>
     </div>
@@ -37,7 +37,7 @@
       type="text"
       id="chat-input"
       placeholder="Type your message..."
-      class="input input-bordered flex-1"
+      class="input flex-1 bg-white border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-100 text-slate-800 placeholder-slate-400"
       autocomplete="off"
     >
     <button id="send-btn" class="btn btn-primary" onclick="sendMessage()">

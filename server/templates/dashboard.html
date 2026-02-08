@@ -4,112 +4,112 @@
 
 {% block content %}
 <!-- Hero -->
-<div class="hero bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl mb-8">
+<div class="hero bg-gradient-to-r from-sky-100 via-indigo-50 to-purple-100 rounded-2xl mb-8 border border-sky-200/50 animate-fade-in">
   <div class="hero-content text-center py-12">
     <div>
-      <h1 class="text-5xl font-bold"><span class="text-primary">#</span>HashBot</h1>
-      <p class="py-4 text-lg opacity-80">Agent Economy on HashKey Chain</p>
-      <p class="text-sm opacity-60">A2A Protocol &bull; x402 Payments &bull; Multi-Agent System</p>
+      <h1 class="text-5xl font-bold text-slate-800"><span class="bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent">#</span>HashBot</h1>
+      <p class="py-4 text-lg text-slate-600">Agent Economy on HashKey Chain</p>
+      <p class="text-sm text-slate-500">A2A Protocol &bull; x402 Payments &bull; Multi-Agent System</p>
     </div>
   </div>
 </div>
 
 <!-- Status Cards -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
   <!-- Health Status -->
-  <div class="card bg-base-100 shadow">
+  <div class="card bg-white shadow-sm border border-slate-200/60 hover:shadow-md transition-shadow animate-slide-up">
     <div class="card-body">
-      <h2 class="card-title text-sm opacity-60">System Status</h2>
+      <h2 class="card-title text-sm text-slate-500">System Status</h2>
       <div class="flex items-center gap-2" id="health-status">
-        <span class="loading loading-spinner loading-sm"></span>
-        <span class="text-sm">Checking...</span>
+        <span class="loading loading-spinner loading-sm text-sky-500"></span>
+        <span class="text-sm text-slate-600">Checking...</span>
       </div>
     </div>
   </div>
 
   <!-- Chain Status -->
-  <div class="card bg-base-100 shadow">
+  <div class="card bg-white shadow-sm border border-slate-200/60 hover:shadow-md transition-shadow animate-slide-up" style="animation-delay: 0.05s">
     <div class="card-body">
-      <h2 class="card-title text-sm opacity-60">Chain Connection</h2>
+      <h2 class="card-title text-sm text-slate-500">Chain Connection</h2>
       <div class="flex items-center gap-2" id="chain-status">
-        <span class="loading loading-spinner loading-sm"></span>
-        <span class="text-sm">Connecting...</span>
+        <span class="loading loading-spinner loading-sm text-sky-500"></span>
+        <span class="text-sm text-slate-600">Connecting...</span>
       </div>
     </div>
   </div>
 
   <!-- Agent Count -->
-  <div class="card bg-base-100 shadow">
+  <div class="card bg-white shadow-sm border border-slate-200/60 hover:shadow-md transition-shadow animate-slide-up" style="animation-delay: 0.1s">
     <div class="card-body">
-      <h2 class="card-title text-sm opacity-60">Built-in Agents</h2>
+      <h2 class="card-title text-sm text-slate-500">Built-in Agents</h2>
       <div id="agent-count">
-        <span class="loading loading-spinner loading-sm"></span>
+        <span class="loading loading-spinner loading-sm text-sky-500"></span>
       </div>
     </div>
   </div>
 
   <!-- OpenClaw Status -->
-  <div class="card bg-base-100 shadow">
+  <div class="card bg-white shadow-sm border border-slate-200/60 hover:shadow-md transition-shadow animate-slide-up" style="animation-delay: 0.15s">
     <div class="card-body">
-      <h2 class="card-title text-sm opacity-60">OpenClaw Gateway</h2>
+      <h2 class="card-title text-sm text-slate-500">OpenClaw Gateway</h2>
       <div class="flex items-center gap-2" id="openclaw-status">
-        <span class="loading loading-spinner loading-sm"></span>
-        <span class="text-sm">Checking...</span>
+        <span class="loading loading-spinner loading-sm text-sky-500"></span>
+        <span class="text-sm text-slate-600">Checking...</span>
       </div>
     </div>
   </div>
 
   <!-- Network -->
-  <div class="card bg-base-100 shadow">
+  <div class="card bg-white shadow-sm border border-slate-200/60 hover:shadow-md transition-shadow animate-slide-up" style="animation-delay: 0.2s">
     <div class="card-body">
-      <h2 class="card-title text-sm opacity-60">Network</h2>
+      <h2 class="card-title text-sm text-slate-500">Network</h2>
       <div id="network-info">
-        <span class="loading loading-spinner loading-sm"></span>
+        <span class="loading loading-spinner loading-sm text-sky-500"></span>
       </div>
     </div>
   </div>
 </div>
 
 <!-- Quick Links -->
-<h2 class="text-2xl font-bold mb-4">Quick Access</h2>
+<h2 class="text-2xl font-bold mb-4 text-slate-800">Quick Access</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-  <a href="/dashboard/my-agents" class="card bg-base-100 shadow hover:shadow-lg transition-shadow cursor-pointer">
+  <a href="/dashboard/my-agents" class="card bg-white shadow-sm border border-slate-200/60 hover:shadow-lg hover:border-sky-300 transition-all cursor-pointer group">
     <div class="card-body">
-      <h3 class="card-title">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      <h3 class="card-title text-slate-700 group-hover:text-sky-600 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
         My Agents
       </h3>
-      <p class="opacity-60">Create &amp; manage your OpenClaw agents</p>
+      <p class="text-slate-500">Create &amp; manage your OpenClaw agents</p>
     </div>
   </a>
 
-  <a href="/dashboard/explore" class="card bg-base-100 shadow hover:shadow-lg transition-shadow cursor-pointer">
+  <a href="/dashboard/explore" class="card bg-white shadow-sm border border-slate-200/60 hover:shadow-lg hover:border-indigo-300 transition-all cursor-pointer group">
     <div class="card-body">
-      <h3 class="card-title">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <h3 class="card-title text-slate-700 group-hover:text-indigo-600 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         Explore
       </h3>
-      <p class="opacity-60">Discover public agents from the community</p>
+      <p class="text-slate-500">Discover public agents from the community</p>
     </div>
   </a>
 
-  <a href="/dashboard/agents" class="card bg-base-100 shadow hover:shadow-lg transition-shadow cursor-pointer">
+  <a href="/dashboard/agents" class="card bg-white shadow-sm border border-slate-200/60 hover:shadow-lg hover:border-purple-300 transition-all cursor-pointer group">
     <div class="card-body">
-      <h3 class="card-title">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      <h3 class="card-title text-slate-700 group-hover:text-purple-600 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         Built-in Agents
       </h3>
-      <p class="opacity-60">Chat with demo A2A agents</p>
+      <p class="text-slate-500">Chat with demo A2A agents</p>
     </div>
   </a>
 
-  <a href="/dashboard/settings" class="card bg-base-100 shadow hover:shadow-lg transition-shadow cursor-pointer">
+  <a href="/dashboard/settings" class="card bg-white shadow-sm border border-slate-200/60 hover:shadow-lg hover:border-emerald-300 transition-all cursor-pointer group">
     <div class="card-body">
-      <h3 class="card-title">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-info" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      <h3 class="card-title text-slate-700 group-hover:text-emerald-600 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         Settings
       </h3>
-      <p class="opacity-60">View configuration and info</p>
+      <p class="text-slate-500">View configuration and info</p>
     </div>
   </a>
 </div>
@@ -126,22 +126,22 @@ async function loadDashboard() {
     const healthEl = document.getElementById('health-status');
     const isHealthy = data.status === 'healthy';
     healthEl.innerHTML = `
-      <span class="badge ${isHealthy ? 'badge-success' : 'badge-warning'} badge-sm"></span>
-      <span class="text-lg font-bold">${data.status.charAt(0).toUpperCase() + data.status.slice(1)}</span>
+      <span class="w-2.5 h-2.5 rounded-full ${isHealthy ? 'bg-emerald-500' : 'bg-amber-500'}"></span>
+      <span class="text-lg font-semibold text-slate-800">${data.status.charAt(0).toUpperCase() + data.status.slice(1)}</span>
     `;
 
     // Chain status
     const chainEl = document.getElementById('chain-status');
     const isConnected = data.chain_status === 'connected';
     chainEl.innerHTML = `
-      <span class="badge ${isConnected ? 'badge-success' : 'badge-error'} badge-sm"></span>
-      <span class="text-lg font-bold">${isConnected ? 'Connected' : 'Unreachable'}</span>
+      <span class="w-2.5 h-2.5 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-red-500'}"></span>
+      <span class="text-lg font-semibold text-slate-800">${isConnected ? 'Connected' : 'Unreachable'}</span>
     `;
 
     // Agent count
     document.getElementById('agent-count').innerHTML = `
-      <span class="text-3xl font-bold text-primary">${data.agents}</span>
-      <span class="text-sm opacity-60 ml-1">registered</span>
+      <span class="text-3xl font-bold bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent">${data.agents}</span>
+      <span class="text-sm text-slate-500 ml-1">registered</span>
     `;
 
     // OpenClaw status
@@ -149,19 +149,19 @@ async function loadDashboard() {
     const ocStatus = data.openclaw_status || 'unknown';
     const ocOk = ocStatus === 'connected';
     ocEl.innerHTML = `
-      <span class="badge ${ocOk ? 'badge-success' : 'badge-warning'} badge-sm"></span>
-      <span class="text-lg font-bold">${ocOk ? 'Connected' : 'Offline'}</span>
+      <span class="w-2.5 h-2.5 rounded-full ${ocOk ? 'bg-emerald-500' : 'bg-amber-500'}"></span>
+      <span class="text-lg font-semibold text-slate-800">${ocOk ? 'Connected' : 'Offline'}</span>
     `;
 
     // Network
     document.getElementById('network-info').innerHTML = `
-      <span class="text-lg font-bold">Chain ID ${data.chain_id}</span>
-      <p class="text-xs opacity-60 truncate">${data.chain}</p>
+      <span class="text-lg font-semibold text-slate-800">Chain ID ${data.chain_id}</span>
+      <p class="text-xs text-slate-500 truncate">${data.chain}</p>
     `;
   } catch {
     document.getElementById('health-status').innerHTML = `
-      <span class="badge badge-error badge-sm"></span>
-      <span class="text-lg font-bold">Error</span>
+      <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+      <span class="text-lg font-semibold text-slate-800">Error</span>
     `;
   }
 }

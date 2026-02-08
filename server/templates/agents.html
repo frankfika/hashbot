@@ -4,31 +4,31 @@
 
 {% block content %}
 <div class="flex items-center justify-between mb-6">
-  <h1 class="text-3xl font-bold">AI Agents</h1>
-  <div class="badge badge-primary badge-outline" id="agent-total">Loading...</div>
+  <h1 class="text-3xl font-bold text-slate-800">Built-in Agents</h1>
+  <div class="badge bg-gradient-to-r from-sky-500 to-indigo-500 text-white border-none" id="agent-total">Loading...</div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="agents-grid">
   <!-- Loading skeleton -->
-  <div class="card bg-base-100 shadow animate-pulse">
+  <div class="card bg-white shadow-sm border border-slate-200/60 animate-pulse">
     <div class="card-body">
-      <div class="h-6 bg-base-300 rounded w-3/4 mb-2"></div>
-      <div class="h-4 bg-base-300 rounded w-full mb-1"></div>
-      <div class="h-4 bg-base-300 rounded w-2/3"></div>
+      <div class="h-6 bg-slate-200 rounded w-3/4 mb-2"></div>
+      <div class="h-4 bg-slate-200 rounded w-full mb-1"></div>
+      <div class="h-4 bg-slate-200 rounded w-2/3"></div>
     </div>
   </div>
-  <div class="card bg-base-100 shadow animate-pulse hidden md:block">
+  <div class="card bg-white shadow-sm border border-slate-200/60 animate-pulse hidden md:block">
     <div class="card-body">
-      <div class="h-6 bg-base-300 rounded w-3/4 mb-2"></div>
-      <div class="h-4 bg-base-300 rounded w-full mb-1"></div>
-      <div class="h-4 bg-base-300 rounded w-2/3"></div>
+      <div class="h-6 bg-slate-200 rounded w-3/4 mb-2"></div>
+      <div class="h-4 bg-slate-200 rounded w-full mb-1"></div>
+      <div class="h-4 bg-slate-200 rounded w-2/3"></div>
     </div>
   </div>
-  <div class="card bg-base-100 shadow animate-pulse hidden lg:block">
+  <div class="card bg-white shadow-sm border border-slate-200/60 animate-pulse hidden lg:block">
     <div class="card-body">
-      <div class="h-6 bg-base-300 rounded w-3/4 mb-2"></div>
-      <div class="h-4 bg-base-300 rounded w-full mb-1"></div>
-      <div class="h-4 bg-base-300 rounded w-2/3"></div>
+      <div class="h-6 bg-slate-200 rounded w-3/4 mb-2"></div>
+      <div class="h-4 bg-slate-200 rounded w-full mb-1"></div>
+      <div class="h-4 bg-slate-200 rounded w-2/3"></div>
     </div>
   </div>
 </div>
@@ -49,7 +49,7 @@ async function loadAgents() {
 
     if (agents.length === 0) {
       grid.innerHTML = `
-        <div class="col-span-full text-center py-12 opacity-60">
+        <div class="col-span-full text-center py-12 text-slate-500">
           <p class="text-lg">No agents registered</p>
         </div>
       `;
@@ -63,7 +63,7 @@ async function loadAgents() {
     };
     const defaultIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>`;
 
-    const colors = ['text-primary', 'text-secondary', 'text-accent'];
+    const colors = ['text-sky-500', 'text-indigo-500', 'text-purple-500'];
 
     agents.forEach((agent, i) => {
       const icon = icons[agent.id] || defaultIcon;
@@ -71,20 +71,21 @@ async function loadAgents() {
       const isFree = agent.price === 'Free';
 
       const card = document.createElement('div');
-      card.className = 'card bg-base-100 shadow hover:shadow-lg transition-all';
+      card.className = 'card bg-white shadow-sm border border-slate-200/60 hover:shadow-lg hover:border-sky-300 transition-all animate-fade-in';
+      card.style.animationDelay = `${i * 0.05}s`;
       card.innerHTML = `
         <div class="card-body">
           <div class="flex items-start justify-between">
             <div class="${color}">${icon}</div>
-            <div class="badge ${isFree ? 'badge-success' : 'badge-warning'} badge-sm">
+            <div class="px-2.5 py-1 rounded-full text-xs font-medium ${isFree ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
               ${agent.price}
             </div>
           </div>
-          <h2 class="card-title mt-2">${agent.name}</h2>
-          <p class="opacity-60 text-sm">${agent.description}</p>
+          <h2 class="card-title mt-2 text-slate-800">${agent.name}</h2>
+          <p class="text-slate-500 text-sm">${agent.description}</p>
           <div class="flex items-center gap-2 mt-2">
-            <span class="badge badge-outline badge-xs">v${agent.version}</span>
-            <span class="badge badge-outline badge-xs">${agent.id}</span>
+            <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs">v${agent.version}</span>
+            <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs">${agent.id}</span>
           </div>
           <div class="card-actions justify-end mt-4">
             <a href="/dashboard/agents/${agent.id}" class="btn btn-primary btn-sm">Chat</a>
@@ -95,7 +96,7 @@ async function loadAgents() {
     });
   } catch {
     document.getElementById('agents-grid').innerHTML = `
-      <div class="col-span-full alert alert-error">
+      <div class="col-span-full bg-red-50 border border-red-200 text-red-700 rounded-xl p-4">
         <span>Failed to load agents. Is the server running?</span>
       </div>
     `;

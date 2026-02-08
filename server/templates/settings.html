@@ -3,23 +3,23 @@
 {% block title %}HashBot - Settings{% endblock %}
 
 {% block content %}
-<h1 class="text-3xl font-bold mb-6">Settings &amp; Info</h1>
+<h1 class="text-3xl font-bold mb-6 text-slate-800">Settings &amp; Info</h1>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
   <!-- Server Info -->
-  <div class="card bg-base-100 shadow">
+  <div class="card bg-white shadow-sm border border-slate-200/60">
     <div class="card-body">
-      <h2 class="card-title">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/></svg>
+      <h2 class="card-title text-slate-800">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/></svg>
         Server
       </h2>
       <div class="overflow-x-auto">
         <table class="table table-sm">
           <tbody>
-            <tr><td class="opacity-60">Name</td><td class="font-mono">HashBot</td></tr>
-            <tr><td class="opacity-60">Version</td><td class="font-mono">0.1.0</td></tr>
-            <tr><td class="opacity-60">Protocol</td><td class="font-mono">A2A v0.1</td></tr>
-            <tr><td class="opacity-60">x402 Payments</td><td><span class="badge badge-success badge-sm">Enabled</span></td></tr>
+            <tr><td class="text-slate-500">Name</td><td class="font-mono text-slate-800">HashBot</td></tr>
+            <tr><td class="text-slate-500">Version</td><td class="font-mono text-slate-800">0.1.0</td></tr>
+            <tr><td class="text-slate-500">Protocol</td><td class="font-mono text-slate-800">A2A v0.1</td></tr>
+            <tr><td class="text-slate-500">x402 Payments</td><td><span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-xs font-medium">Enabled</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -27,69 +27,69 @@
   </div>
 
   <!-- Chain Config -->
-  <div class="card bg-base-100 shadow">
+  <div class="card bg-white shadow-sm border border-slate-200/60">
     <div class="card-body">
-      <h2 class="card-title">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+      <h2 class="card-title text-slate-800">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
         Chain Configuration
       </h2>
       <div class="overflow-x-auto" id="chain-config">
         <div class="flex justify-center py-4">
-          <span class="loading loading-spinner loading-md"></span>
+          <span class="loading loading-spinner loading-md text-sky-500"></span>
         </div>
       </div>
     </div>
   </div>
 
   <!-- OpenClaw Gateway -->
-  <div class="card bg-base-100 shadow">
+  <div class="card bg-white shadow-sm border border-slate-200/60">
     <div class="card-body">
-      <h2 class="card-title">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      <h2 class="card-title text-slate-800">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
         OpenClaw Gateway
       </h2>
       <div class="overflow-x-auto" id="openclaw-config">
         <div class="flex justify-center py-4">
-          <span class="loading loading-spinner loading-md"></span>
+          <span class="loading loading-spinner loading-md text-sky-500"></span>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Agent Registry -->
-  <div class="card bg-base-100 shadow lg:col-span-2">
+  <div class="card bg-white shadow-sm border border-slate-200/60 lg:col-span-2">
     <div class="card-body">
-      <h2 class="card-title">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      <h2 class="card-title text-slate-800">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         Agent Registry
       </h2>
       <div class="overflow-x-auto" id="agent-registry">
         <div class="flex justify-center py-4">
-          <span class="loading loading-spinner loading-md"></span>
+          <span class="loading loading-spinner loading-md text-sky-500"></span>
         </div>
       </div>
     </div>
   </div>
 
   <!-- API Endpoints -->
-  <div class="card bg-base-100 shadow lg:col-span-2">
+  <div class="card bg-white shadow-sm border border-slate-200/60 lg:col-span-2">
     <div class="card-body">
-      <h2 class="card-title">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-info" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      <h2 class="card-title text-slate-800">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
         API Endpoints
       </h2>
       <div class="overflow-x-auto">
         <table class="table table-sm">
           <thead>
-            <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+            <tr class="text-slate-600"><th>Method</th><th>Path</th><th>Description</th></tr>
           </thead>
           <tbody>
-            <tr><td><span class="badge badge-success badge-sm">GET</span></td><td class="font-mono">/health</td><td>Health check</td></tr>
-            <tr><td><span class="badge badge-success badge-sm">GET</span></td><td class="font-mono">/agents</td><td>List agents</td></tr>
-            <tr><td><span class="badge badge-success badge-sm">GET</span></td><td class="font-mono">/.well-known/agent.json</td><td>A2A agent card</td></tr>
-            <tr><td><span class="badge badge-info badge-sm">POST</span></td><td class="font-mono">/a2a</td><td>A2A JSON-RPC endpoint</td></tr>
-            <tr><td><span class="badge badge-success badge-sm">GET</span></td><td class="font-mono">/docs</td><td>OpenAPI documentation</td></tr>
-            <tr><td><span class="badge badge-success badge-sm">GET</span></td><td class="font-mono">/dashboard</td><td>Web dashboard</td></tr>
+            <tr><td><span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-xs font-medium">GET</span></td><td class="font-mono text-slate-700">/health</td><td class="text-slate-600">Health check</td></tr>
+            <tr><td><span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-xs font-medium">GET</span></td><td class="font-mono text-slate-700">/agents</td><td class="text-slate-600">List agents</td></tr>
+            <tr><td><span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-xs font-medium">GET</span></td><td class="font-mono text-slate-700">/.well-known/agent.json</td><td class="text-slate-600">A2A agent card</td></tr>
+            <tr><td><span class="px-2 py-0.5 bg-sky-100 text-sky-700 rounded text-xs font-medium">POST</span></td><td class="font-mono text-slate-700">/a2a</td><td class="text-slate-600">A2A JSON-RPC endpoint</td></tr>
+            <tr><td><span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-xs font-medium">GET</span></td><td class="font-mono text-slate-700">/docs</td><td class="text-slate-600">OpenAPI documentation</td></tr>
+            <tr><td><span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-xs font-medium">GET</span></td><td class="font-mono text-slate-700">/dashboard</td><td class="text-slate-600">Web dashboard</td></tr>
           </tbody>
         </table>
       </div>
@@ -113,17 +113,17 @@ async function loadSettings() {
     document.getElementById('chain-config').innerHTML = `
       <table class="table table-sm">
         <tbody>
-          <tr><td class="opacity-60">RPC URL</td><td class="font-mono text-xs break-all">${health.chain}</td></tr>
-          <tr><td class="opacity-60">Chain ID</td><td class="font-mono">${health.chain_id}</td></tr>
+          <tr><td class="text-slate-500">RPC URL</td><td class="font-mono text-xs break-all text-slate-700">${health.chain}</td></tr>
+          <tr><td class="text-slate-500">Chain ID</td><td class="font-mono text-slate-700">${health.chain_id}</td></tr>
           <tr>
-            <td class="opacity-60">Status</td>
+            <td class="text-slate-500">Status</td>
             <td>
-              <span class="badge ${health.chain_status === 'connected' ? 'badge-success' : 'badge-error'} badge-sm">
+              <span class="px-2 py-0.5 rounded text-xs font-medium ${health.chain_status === 'connected' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}">
                 ${health.chain_status}
               </span>
             </td>
           </tr>
-          <tr><td class="opacity-60">Network</td><td class="font-mono">${health.chain_id === 177 ? 'HashKey Testnet' : 'HashKey Chain'}</td></tr>
+          <tr><td class="text-slate-500">Network</td><td class="font-mono text-slate-700">${health.chain_id === 177 ? 'HashKey Testnet' : 'HashKey Chain'}</td></tr>
         </tbody>
       </table>
     `;
@@ -134,11 +134,11 @@ async function loadSettings() {
     document.getElementById('openclaw-config').innerHTML = `
       <table class="table table-sm">
         <tbody>
-          <tr><td class="opacity-60">Gateway URL</td><td class="font-mono text-xs break-all">${ocUrl}</td></tr>
+          <tr><td class="text-slate-500">Gateway URL</td><td class="font-mono text-xs break-all text-slate-700">${ocUrl}</td></tr>
           <tr>
-            <td class="opacity-60">Status</td>
+            <td class="text-slate-500">Status</td>
             <td>
-              <span class="badge ${ocStatus === 'connected' ? 'badge-success' : 'badge-warning'} badge-sm">
+              <span class="px-2 py-0.5 rounded text-xs font-medium ${ocStatus === 'connected' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
                 ${ocStatus}
               </span>
             </td>
@@ -151,25 +151,25 @@ async function loadSettings() {
     const agents = agentsData.agents;
     let rows = agents.map(a => `
       <tr>
-        <td class="font-mono">${a.id}</td>
-        <td>${a.name}</td>
-        <td class="text-xs opacity-60 max-w-xs truncate">${a.description}</td>
-        <td><span class="badge ${a.price === 'Free' ? 'badge-success' : 'badge-warning'} badge-sm">${a.price}</span></td>
-        <td class="font-mono text-xs">v${a.version}</td>
+        <td class="font-mono text-slate-700">${a.id}</td>
+        <td class="text-slate-800">${a.name}</td>
+        <td class="text-xs text-slate-500 max-w-xs truncate">${a.description}</td>
+        <td><span class="px-2 py-0.5 rounded text-xs font-medium ${a.price === 'Free' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${a.price}</span></td>
+        <td class="font-mono text-xs text-slate-600">v${a.version}</td>
       </tr>
     `).join('');
 
     document.getElementById('agent-registry').innerHTML = `
       <table class="table table-sm">
         <thead>
-          <tr><th>ID</th><th>Name</th><th>Description</th><th>Price</th><th>Version</th></tr>
+          <tr class="text-slate-600"><th>ID</th><th>Name</th><th>Description</th><th>Price</th><th>Version</th></tr>
         </thead>
         <tbody>${rows}</tbody>
       </table>
     `;
   } catch {
     document.getElementById('chain-config').innerHTML = `
-      <div class="alert alert-error"><span>Failed to load configuration</span></div>
+      <div class="bg-red-50 border border-red-200 text-red-700 rounded-lg p-3"><span>Failed to load configuration</span></div>
     `;
   }
 }

@@ -1,6 +1,6 @@
 """x402 Payment Extension for A2A Protocol."""
 
-from hashbot.x402.executor import PaymentRequired, X402Executor
+from hashbot.x402.executor import PaymentRequiredError, X402Executor
 from hashbot.x402.payment import (
     PaymentPayload,
     PaymentReceipt,
@@ -18,5 +18,5 @@ __all__ = [
     "X402PaymentRequiredResponse",
     "X402SettleResponse",
     "X402Executor",
-    "PaymentRequired",
+    "PaymentRequiredError",
 ]

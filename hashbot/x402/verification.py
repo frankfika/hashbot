@@ -33,7 +33,7 @@ class PaymentVerifier:
 
             # For simple signatures, recover the signer
             # In production, use EIP-712 typed data signing
-            message = encode_defunct(primitive=message_data)
+            _message = encode_defunct(primitive=message_data)
 
             # This assumes the payload contains the signature
             # Actual implementation depends on the signing scheme

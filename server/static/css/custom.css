@@ -1,11 +1,24 @@
-/* HashBot Dashboard - Custom Styles */
+/* HashBot Dashboard - Modern Light Theme */
 
 /* Smooth scrolling for chat */
 #chat-messages {
   scroll-behavior: smooth;
 }
 
-/* Chat bubble markdown content */
+/* Modern card styles */
+.card {
+  background: white;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  border-color: rgba(14, 165, 233, 0.3);
+}
+
+/* Chat bubble markdown content - Light theme */
 .chat-bubble h1,
 .chat-bubble h2,
 .chat-bubble h3 {
@@ -28,14 +41,16 @@
 .chat-bubble ol { list-style-type: decimal; }
 
 .chat-bubble code {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(14, 165, 233, 0.1);
+  color: #0369a1;
   padding: 0.125rem 0.375rem;
   border-radius: 0.25rem;
   font-size: 0.875em;
 }
 
 .chat-bubble pre {
-  background: rgba(0, 0, 0, 0.3);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   padding: 0.75rem;
   border-radius: 0.5rem;
   overflow-x: auto;
@@ -45,10 +60,11 @@
 .chat-bubble pre code {
   background: none;
   padding: 0;
+  color: #334155;
 }
 
 .chat-bubble hr {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(0, 0, 0, 0.1);
   margin: 0.5rem 0;
 }
 
@@ -64,15 +80,47 @@
 
 .chat-bubble th,
 .chat-bubble td {
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid #e2e8f0;
   padding: 0.25rem 0.5rem;
+}
+
+.chat-bubble th {
+  background: #f1f5f9;
+}
+
+/* Agent bubble code overrides (white text on gradient) */
+.chat-bubble[class*="from-sky-500"] code {
+  background: rgba(255, 255, 255, 0.15);
+  color: #e0f2fe;
+}
+
+.chat-bubble[class*="from-sky-500"] pre {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.chat-bubble[class*="from-sky-500"] pre code {
+  color: #e0f2fe;
+}
+
+.chat-bubble[class*="from-sky-500"] th {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.chat-bubble[class*="from-sky-500"] th,
+.chat-bubble[class*="from-sky-500"] td {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.chat-bubble[class*="from-sky-500"] hr {
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Payment info card in chat */
 .payment-info {
-  background: rgba(255, 193, 7, 0.1);
-  border: 1px solid rgba(255, 193, 7, 0.3);
-  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+  border: 1px solid #fcd34d;
+  border-radius: 0.75rem;
   padding: 0.75rem;
   margin-top: 0.5rem;
 }
@@ -80,11 +128,178 @@
 /* Typing indicator */
 .typing-indicator span {
   animation: blink 1.4s infinite both;
+  background: rgba(255, 255, 255, 0.8);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 2px;
 }
 .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
 .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes blink {
-  0%, 80%, 100% { opacity: 0; }
+  0%, 80%, 100% { opacity: 0.3; }
   40% { opacity: 1; }
+}
+
+/* Stats cards */
+.stat {
+  background: white;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+}
+
+.stat-title {
+  color: #64748b;
+}
+
+.stat-value {
+  color: #0f172a;
+}
+
+.stat-desc {
+  color: #94a3b8;
+}
+
+/* Modern button styles */
+.btn-primary {
+  background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: white;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+}
+
+.btn-secondary:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+/* Input fields */
+.input, .textarea, .select {
+  background: white;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+}
+
+.input:focus, .textarea:focus, .select:focus {
+  border-color: #0ea5e9;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+/* Badge styles */
+.badge-primary {
+  background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+  color: white;
+  border: none;
+}
+
+.badge-success {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.badge-warning {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+/* Agent cards */
+.agent-card {
+  background: white;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.agent-card:hover {
+  border-color: #0ea5e9;
+  box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Skill tags */
+.skill-tag {
+  background: linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%);
+  color: #0369a1;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Status indicators */
+.status-online {
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+}
+
+.status-offline {
+  background: #94a3b8;
+}
+
+/* Glass effect for modals */
+.modal-box {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+/* Progress bar */
+.progress-primary::-webkit-progress-value {
+  background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Animation utilities */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }

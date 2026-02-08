@@ -5,15 +5,15 @@
 {% block content %}
 <div class="flex items-center justify-between mb-6">
   <div>
-    <h1 class="text-3xl font-bold">Explore Agents</h1>
-    <p class="text-sm opacity-60 mt-1">Discover public agents created by the community</p>
+    <h1 class="text-3xl font-bold text-slate-800">Explore Agents</h1>
+    <p class="text-sm text-slate-500 mt-1">Discover public agents created by the community</p>
   </div>
-  <div class="badge badge-primary badge-outline" id="explore-total">Loading...</div>
+  <div class="badge bg-gradient-to-r from-sky-500 to-indigo-500 text-white border-none" id="explore-total">Loading...</div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="explore-grid">
-  <div class="col-span-full text-center py-12 opacity-60">
-    <span class="loading loading-spinner loading-lg"></span>
+  <div class="col-span-full text-center py-12 text-slate-500">
+    <span class="loading loading-spinner loading-lg text-sky-500"></span>
     <p class="mt-2">Loading agents...</p>
   </div>
 </div>
@@ -32,27 +32,35 @@ async function loadExplore() {
 
     if (agents.length === 0) {
       grid.innerHTML = `
-        <div class="col-span-full text-center py-12">
-          <p class="text-lg opacity-60">No public agents yet</p>
-          <p class="text-sm opacity-40 mt-2">Create an agent and make it public to appear here</p>
+        <div class="col-span-full text-center py-16">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+          <p class="text-lg text-slate-600 mb-2">No community agents yet</p>
+          <p class="text-sm text-slate-400 mb-6">Create an agent and make it public, or try the built-in agents</p>
+          <div class="flex gap-3 justify-center">
+            <a href="/dashboard/my-agents" class="btn btn-primary btn-sm">Create Agent</a>
+            <a href="/dashboard/agents" class="btn btn-ghost btn-sm border border-slate-300 text-slate-600">View Built-in Agents</a>
+          </div>
         </div>`;
       return;
     }
 
     grid.innerHTML = '';
-    agents.forEach(agent => {
+    agents.forEach((agent, i) => {
       const card = document.createElement('div');
-      card.className = 'card bg-base-100 shadow hover:shadow-lg transition-all';
+      card.className = 'card bg-white shadow-sm border border-slate-200/60 hover:shadow-lg hover:border-sky-300 transition-all animate-fade-in';
+      card.style.animationDelay = `${i * 0.05}s`;
       card.innerHTML = `
         <div class="card-body">
           <div class="flex items-start justify-between">
-            <h2 class="card-title">${agent.name}</h2>
+            <h2 class="card-title text-slate-800">${agent.name}</h2>
             ${agent.price_per_call > 0
-              ? `<span class="badge badge-warning badge-sm">${agent.price_per_call} ${agent.currency}</span>`
-              : '<span class="badge badge-success badge-sm">Free</span>'}
+              ? `<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700">${agent.price_per_call} ${agent.currency}</span>`
+              : '<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">Free</span>'}
           </div>
-          <p class="opacity-60 text-sm">${agent.description || 'No description'}</p>
-          <div class="text-xs opacity-40 mt-1">Created: ${new Date(agent.created_at).toLocaleDateString()}</div>
+          <p class="text-slate-500 text-sm">${agent.description || 'No description'}</p>
+          <div class="text-xs text-slate-400 mt-1">Created: ${new Date(agent.created_at).toLocaleDateString()}</div>
           <div class="card-actions justify-end mt-4">
             <a href="/dashboard/agents/${agent.id}" class="btn btn-primary btn-sm">Chat</a>
           </div>
@@ -60,7 +68,7 @@ async function loadExplore() {
       grid.appendChild(card);
     });
   } catch {
-    grid.innerHTML = '<div class="col-span-full alert alert-error">Failed to load agents</div>';
+    grid.innerHTML = '<div class="col-span-full bg-red-50 border border-red-200 text-red-700 rounded-xl p-4">Failed to load agents</div>';
   }
 }
 

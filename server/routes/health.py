@@ -4,6 +4,7 @@ import logging
 
 import httpx
 from fastapi import APIRouter
+from fastapi.responses import RedirectResponse
 
 from hashbot.agents.registry import get_registry
 from hashbot.config import get_settings
@@ -22,12 +23,8 @@ def set_openclaw_client(client: OpenClawClient) -> None:
 
 @router.get("/")
 async def root():
-    """Root endpoint."""
-    return {
-        "name": "HashBot",
-        "version": "0.1.0",
-        "description": "Agent Economy on HashKey Chain",
-    }
+    """Root endpoint — redirect to dashboard."""
+    return RedirectResponse(url="/dashboard")
 
 
 @router.get("/health")

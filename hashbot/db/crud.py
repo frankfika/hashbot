@@ -5,7 +5,6 @@ from sqlalchemy import select
 from hashbot.db.engine import get_db
 from hashbot.db.models import Agent, AgentSkill, Payment, User, Wallet
 
-
 # ── Users ──────────────────────────────────────────────────────────────
 
 async def get_or_create_user(

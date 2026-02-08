@@ -8,37 +8,37 @@
 
 {% block content %}
 <div class="flex items-center gap-4 mb-6">
-  <a href="/dashboard/my-agents" class="btn btn-ghost btn-sm">
+  <a href="/dashboard/my-agents" class="btn btn-ghost btn-sm text-slate-600 hover:text-sky-600">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
   </a>
   <div>
-    <h1 class="text-2xl font-bold">{{ agent.name }}</h1>
-    <p class="text-sm opacity-60">{{ agent.description }}</p>
+    <h1 class="text-2xl font-bold text-slate-800">{{ agent.name }}</h1>
+    <p class="text-sm text-slate-500">{{ agent.description }}</p>
   </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
   <!-- Agent Config -->
   <div class="lg:col-span-1 space-y-4">
-    <div class="card bg-base-100 shadow">
+    <div class="card bg-white shadow-sm border border-slate-200/60">
       <div class="card-body">
-        <h2 class="card-title text-sm">Agent Settings</h2>
+        <h2 class="card-title text-sm text-slate-800">Agent Settings</h2>
         <form id="settings-form" onsubmit="saveSettings(event)">
           <div class="form-control mb-2">
-            <label class="label"><span class="label-text text-xs">Name</span></label>
-            <input type="text" id="edit-name" class="input input-bordered input-sm" value="{{ agent.name }}">
+            <label class="label"><span class="label-text text-xs text-slate-600">Name</span></label>
+            <input type="text" id="edit-name" class="input input-bordered input-sm bg-white border-slate-300 text-slate-800" value="{{ agent.name }}">
           </div>
           <div class="form-control mb-2">
-            <label class="label"><span class="label-text text-xs">Description</span></label>
-            <textarea id="edit-desc" class="textarea textarea-bordered textarea-sm" rows="2">{{ agent.description }}</textarea>
+            <label class="label"><span class="label-text text-xs text-slate-600">Description</span></label>
+            <textarea id="edit-desc" class="textarea textarea-bordered textarea-sm bg-white border-slate-300 text-slate-800" rows="2">{{ agent.description }}</textarea>
           </div>
           <div class="form-control mb-2">
-            <label class="label"><span class="label-text text-xs">Price per call</span></label>
-            <input type="number" id="edit-price" class="input input-bordered input-sm" step="0.01" value="{{ agent.price_per_call }}">
+            <label class="label"><span class="label-text text-xs text-slate-600">Price per call</span></label>
+            <input type="number" id="edit-price" class="input input-bordered input-sm bg-white border-slate-300 text-slate-800" step="0.01" value="{{ agent.price_per_call }}">
           </div>
           <div class="form-control mb-3">
             <label class="label cursor-pointer">
-              <span class="label-text text-xs">Public</span>
+              <span class="label-text text-xs text-slate-600">Public</span>
               <input type="checkbox" id="edit-public" class="toggle toggle-sm toggle-primary" {{ 'checked' if agent.is_public else '' }}>
             </label>
           </div>
@@ -47,24 +47,24 @@
       </div>
     </div>
 
-    <div class="card bg-base-100 shadow">
+    <div class="card bg-white shadow-sm border border-slate-200/60">
       <div class="card-body">
-        <h2 class="card-title text-sm">Quick Actions</h2>
+        <h2 class="card-title text-sm text-slate-800">Quick Actions</h2>
         <div class="space-y-2">
-          <a href="/dashboard/my-agents/{{ agent.id }}/skills" class="btn btn-outline btn-sm btn-block">Manage Skills</a>
+          <a href="/dashboard/my-agents/{{ agent.id }}/skills" class="btn btn-outline btn-sm btn-block border-slate-300 text-slate-600 hover:bg-sky-50 hover:border-sky-300 hover:text-sky-600">Manage Skills</a>
           <button class="btn btn-error btn-outline btn-sm btn-block" onclick="deleteAgent()">Delete Agent</button>
         </div>
       </div>
     </div>
 
-    <div class="card bg-base-100 shadow">
+    <div class="card bg-white shadow-sm border border-slate-200/60">
       <div class="card-body">
-        <h2 class="card-title text-sm">Info</h2>
+        <h2 class="card-title text-sm text-slate-800">Info</h2>
         <table class="table table-xs">
           <tbody>
-            <tr><td class="opacity-60">ID</td><td class="font-mono text-xs">{{ agent.id }}</td></tr>
-            <tr><td class="opacity-60">OpenClaw ID</td><td class="font-mono text-xs">{{ agent.openclaw_agent_id }}</td></tr>
-            <tr><td class="opacity-60">Created</td><td class="text-xs">{{ agent.created_at }}</td></tr>
+            <tr><td class="text-slate-500">ID</td><td class="font-mono text-xs text-slate-700">{{ agent.id }}</td></tr>
+            <tr><td class="text-slate-500">OpenClaw ID</td><td class="font-mono text-xs text-slate-700">{{ agent.openclaw_agent_id }}</td></tr>
+            <tr><td class="text-slate-500">Created</td><td class="text-xs text-slate-700">{{ agent.created_at }}</td></tr>
           </tbody>
         </table>
       </div>
@@ -73,18 +73,18 @@
 
   <!-- Chat Test -->
   <div class="lg:col-span-2">
-    <div class="card bg-base-100 shadow h-full">
+    <div class="card bg-white shadow-sm border border-slate-200/60 h-full">
       <div class="card-body flex flex-col">
-        <h2 class="card-title text-sm">Test Chat</h2>
-        <div class="flex-1 overflow-y-auto bg-base-200 rounded-lg p-4 space-y-3 min-h-[400px]" id="chat-messages">
+        <h2 class="card-title text-sm text-slate-800">Test Chat</h2>
+        <div class="flex-1 overflow-y-auto bg-slate-50 rounded-lg p-4 space-y-3 min-h-[400px] border border-slate-200/60" id="chat-messages">
           <div class="chat chat-start">
-            <div class="chat-bubble chat-bubble-primary text-sm">
+            <div class="chat-bubble bg-gradient-to-r from-sky-500 to-indigo-500 text-white text-sm">
               Hello! I'm <strong>{{ agent.name }}</strong>. Send a message to test me.
             </div>
           </div>
         </div>
         <div class="mt-3 flex gap-2">
-          <input type="text" id="chat-input" placeholder="Test your agent..." class="input input-bordered input-sm flex-1" autocomplete="off">
+          <input type="text" id="chat-input" placeholder="Test your agent..." class="input input-sm flex-1 bg-white border-slate-300 text-slate-800" autocomplete="off">
           <button id="send-btn" class="btn btn-primary btn-sm" onclick="sendTestMessage()">Send</button>
         </div>
       </div>
@@ -110,8 +110,8 @@ async function sendTestMessage() {
   input.value = '';
 
   const msgs = document.getElementById('chat-messages');
-  msgs.innerHTML += `<div class="chat chat-end"><div class="chat-bubble text-sm">${escapeHtml(text)}</div></div>`;
-  msgs.innerHTML += `<div id="typing" class="chat chat-start"><div class="chat-bubble chat-bubble-primary text-sm"><span class="loading loading-dots loading-xs"></span></div></div>`;
+  msgs.innerHTML += `<div class="chat chat-end"><div class="chat-bubble bg-slate-200 text-slate-800 text-sm">${escapeHtml(text)}</div></div>`;
+  msgs.innerHTML += `<div id="typing" class="chat chat-start"><div class="chat-bubble bg-gradient-to-r from-sky-500 to-indigo-500 text-white text-sm"><span class="loading loading-dots loading-xs"></span></div></div>`;
   msgs.scrollTop = msgs.scrollHeight;
 
   try {
@@ -123,13 +123,13 @@ async function sendTestMessage() {
     document.getElementById('typing')?.remove();
     const data = await resp.json();
     if (resp.ok) {
-      msgs.innerHTML += `<div class="chat chat-start"><div class="chat-bubble chat-bubble-primary text-sm">${marked.parse(data.response || 'No response')}</div></div>`;
+      msgs.innerHTML += `<div class="chat chat-start"><div class="chat-bubble bg-gradient-to-r from-sky-500 to-indigo-500 text-white text-sm">${marked.parse(data.response || 'No response')}</div></div>`;
     } else {
-      msgs.innerHTML += `<div class="chat chat-start"><div class="chat-bubble chat-bubble-error text-sm">${data.detail || 'Error'}</div></div>`;
+      msgs.innerHTML += `<div class="chat chat-start"><div class="chat-bubble bg-red-100 text-red-700 text-sm">${data.detail || 'Error'}</div></div>`;
     }
   } catch {
     document.getElementById('typing')?.remove();
-    msgs.innerHTML += `<div class="chat chat-start"><div class="chat-bubble chat-bubble-error text-sm">Network error</div></div>`;
+    msgs.innerHTML += `<div class="chat chat-start"><div class="chat-bubble bg-red-100 text-red-700 text-sm">Network error</div></div>`;
   }
   msgs.scrollTop = msgs.scrollHeight;
 }

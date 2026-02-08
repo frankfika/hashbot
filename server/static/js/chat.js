@@ -30,7 +30,7 @@ function scrollToBottom() {
 function addUserBubble(text) {
   const div = document.createElement('div');
   div.className = 'chat chat-end';
-  div.innerHTML = `<div class="chat-bubble">${escapeHtml(text)}</div>`;
+  div.innerHTML = `<div class="chat-bubble bg-slate-200 text-slate-800">${escapeHtml(text)}</div>`;
   chatMessages.appendChild(div);
   scrollToBottom();
 }
@@ -38,7 +38,7 @@ function addUserBubble(text) {
 function addAgentBubble(html) {
   const div = document.createElement('div');
   div.className = 'chat chat-start';
-  div.innerHTML = `<div class="chat-bubble chat-bubble-primary">${html}</div>`;
+  div.innerHTML = `<div class="chat-bubble bg-gradient-to-r from-sky-500 to-indigo-500 text-white">${html}</div>`;
   chatMessages.appendChild(div);
   scrollToBottom();
 }
@@ -58,13 +58,13 @@ function addPaymentBubble(paymentData) {
   const div = document.createElement('div');
   div.className = 'chat chat-start';
   div.innerHTML = `
-    <div class="chat-bubble chat-bubble-warning">
+    <div class="chat-bubble bg-amber-50 border border-amber-200 text-amber-900">
       <div class="font-bold mb-1">💰 Payment Required</div>
       <div class="payment-info">
         <div class="text-sm">x402 Payment Protocol v${paymentData.x402Version || '0.1'}</div>
         ${details}
       </div>
-      <div class="text-xs mt-2 opacity-70">Send payment via x402 to continue</div>
+      <div class="text-xs mt-2 text-amber-600">Send payment via x402 to continue</div>
     </div>
   `;
   chatMessages.appendChild(div);
@@ -76,7 +76,7 @@ function addTypingIndicator() {
   div.className = 'chat chat-start';
   div.id = 'typing-indicator';
   div.innerHTML = `
-    <div class="chat-bubble chat-bubble-primary">
+    <div class="chat-bubble bg-gradient-to-r from-sky-500 to-indigo-500 text-white">
       <span class="typing-indicator">
         <span>●</span><span>●</span><span>●</span>
       </span>
@@ -94,7 +94,7 @@ function removeTypingIndicator() {
 function addErrorBubble(message) {
   const div = document.createElement('div');
   div.className = 'chat chat-start';
-  div.innerHTML = `<div class="chat-bubble chat-bubble-error">${escapeHtml(message)}</div>`;
+  div.innerHTML = `<div class="chat-bubble bg-red-100 text-red-700">${escapeHtml(message)}</div>`;
   chatMessages.appendChild(div);
   scrollToBottom();
 }
@@ -205,10 +205,10 @@ async function sendMessage() {
           // Render data as formatted JSON
           const json = JSON.stringify(part.data, null, 2);
           addAgentBubble(`
-            <details class="collapse collapse-arrow">
-              <summary class="collapse-title text-sm font-medium p-0 min-h-0">📊 View Data</summary>
-              <div class="collapse-content p-0 pt-2">
-                <pre><code>${escapeHtml(json)}</code></pre>
+            <details class="cursor-pointer">
+              <summary class="text-sm font-medium text-white/90 hover:text-white">📊 View Data</summary>
+              <div class="pt-2">
+                <pre class="bg-white/10 rounded-lg p-2 text-xs"><code>${escapeHtml(json)}</code></pre>
               </div>
             </details>
           `);

@@ -17,7 +17,7 @@ from hashbot.x402.payment import (
 T = TypeVar("T")
 
 
-class PaymentRequired(Exception):
+class PaymentRequiredError(Exception):
     """Exception raised when payment is required."""
 
     def __init__(self, requirements: list[PaymentRequirements]):
@@ -200,7 +200,7 @@ def require_payment(
                 PaymentStatus.PAYMENT_COMPLETED.value,
             ):
                 # Raise PaymentRequired to signal payment flow
-                raise PaymentRequired([])
+                raise PaymentRequiredError([])
 
             return await func(task)
 

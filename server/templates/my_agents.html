@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="flex items-center justify-between mb-6">
-  <h1 class="text-3xl font-bold">My Agents</h1>
+  <h1 class="text-3xl font-bold text-slate-800">My Agents</h1>
   <button class="btn btn-primary btn-sm" onclick="showCreateModal()">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
     Create Agent
@@ -12,36 +12,36 @@
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="my-agents-grid">
-  <div class="col-span-full text-center py-12 opacity-60">
-    <span class="loading loading-spinner loading-lg"></span>
+  <div class="col-span-full text-center py-12 text-slate-500">
+    <span class="loading loading-spinner loading-lg text-sky-500"></span>
     <p class="mt-2">Loading your agents...</p>
   </div>
 </div>
 
 <!-- Create Agent Modal -->
 <dialog id="create-modal" class="modal">
-  <div class="modal-box">
-    <h3 class="font-bold text-lg mb-4">Create New Agent</h3>
+  <div class="modal-box bg-white border border-slate-200 shadow-xl">
+    <h3 class="font-bold text-lg mb-4 text-slate-800">Create New Agent</h3>
     <form id="create-form" onsubmit="createAgent(event)">
       <div class="form-control mb-3">
-        <label class="label"><span class="label-text">Agent Name</span></label>
-        <input type="text" id="agent-name" class="input input-bordered" placeholder="My Crypto Assistant" required>
+        <label class="label"><span class="label-text text-slate-600">Agent Name</span></label>
+        <input type="text" id="agent-name" class="input input-bordered bg-white border-slate-300 focus:border-sky-500" placeholder="My Crypto Assistant" required>
       </div>
       <div class="form-control mb-3">
-        <label class="label"><span class="label-text">Description</span></label>
-        <textarea id="agent-desc" class="textarea textarea-bordered" rows="3" placeholder="What does your agent do?"></textarea>
+        <label class="label"><span class="label-text text-slate-600">Description</span></label>
+        <textarea id="agent-desc" class="textarea textarea-bordered bg-white border-slate-300 focus:border-sky-500" rows="3" placeholder="What does your agent do?"></textarea>
       </div>
       <div class="form-control mb-4">
-        <label class="label"><span class="label-text">Soul / System Prompt (optional)</span></label>
-        <textarea id="agent-soul" class="textarea textarea-bordered" rows="4" placeholder="Custom personality and instructions..."></textarea>
+        <label class="label"><span class="label-text text-slate-600">Soul / System Prompt (optional)</span></label>
+        <textarea id="agent-soul" class="textarea textarea-bordered bg-white border-slate-300 focus:border-sky-500" rows="4" placeholder="Custom personality and instructions..."></textarea>
       </div>
       <div class="modal-action">
-        <button type="button" class="btn" onclick="document.getElementById('create-modal').close()">Cancel</button>
+        <button type="button" class="btn btn-ghost text-slate-600" onclick="document.getElementById('create-modal').close()">Cancel</button>
         <button type="submit" class="btn btn-primary" id="create-btn">Create</button>
       </div>
     </form>
   </div>
-  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  <form method="dialog" class="modal-backdrop bg-slate-900/20"><button>close</button></form>
 </dialog>
 {% endblock %}
 
@@ -57,45 +57,46 @@ async function loadMyAgents() {
   const grid = document.getElementById('my-agents-grid');
   try {
     const resp = await fetch(`/api/agents/user/${OWNER_TELEGRAM_ID}`);
-    if (!resp.ok) {
-      grid.innerHTML = '<div class="col-span-full alert alert-info">No agents yet. Create your first agent!</div>';
-      return;
-    }
-    const data = await resp.json();
+    const data = resp.ok ? await resp.json() : { agents: [] };
     const agents = data.agents || [];
 
     if (agents.length === 0) {
       grid.innerHTML = `
-        <div class="col-span-full text-center py-12">
-          <p class="text-lg opacity-60 mb-4">You haven't created any agents yet</p>
+        <div class="col-span-full text-center py-16">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-sky-100 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          </div>
+          <p class="text-lg text-slate-600 mb-2">No agents yet</p>
+          <p class="text-sm text-slate-400 mb-6">Create your first AI agent powered by OpenClaw</p>
           <button class="btn btn-primary" onclick="showCreateModal()">Create Your First Agent</button>
         </div>`;
       return;
     }
 
     grid.innerHTML = '';
-    agents.forEach(agent => {
+    agents.forEach((agent, i) => {
       const card = document.createElement('div');
-      card.className = 'card bg-base-100 shadow hover:shadow-lg transition-all';
+      card.className = 'card bg-white shadow-sm border border-slate-200/60 hover:shadow-lg hover:border-sky-300 transition-all animate-fade-in';
+      card.style.animationDelay = `${i * 0.05}s`;
       card.innerHTML = `
         <div class="card-body">
           <div class="flex items-start justify-between">
-            <h2 class="card-title">${agent.name}</h2>
+            <h2 class="card-title text-slate-800">${agent.name}</h2>
             <div class="flex gap-1">
-              ${agent.is_public ? '<span class="badge badge-success badge-sm">Public</span>' : '<span class="badge badge-ghost badge-sm">Private</span>'}
-              ${agent.price_per_call > 0 ? `<span class="badge badge-warning badge-sm">${agent.price_per_call} ${agent.currency}</span>` : ''}
+              ${agent.is_public ? '<span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-xs font-medium">Public</span>' : '<span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs font-medium">Private</span>'}
+              ${agent.price_per_call > 0 ? `<span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-xs font-medium">${agent.price_per_call} ${agent.currency}</span>` : ''}
             </div>
           </div>
-          <p class="opacity-60 text-sm">${agent.description || 'No description'}</p>
+          <p class="text-slate-500 text-sm">${agent.description || 'No description'}</p>
           <div class="card-actions justify-end mt-4">
-            <a href="/dashboard/my-agents/${agent.id}/skills" class="btn btn-ghost btn-xs">Skills</a>
+            <a href="/dashboard/my-agents/${agent.id}/skills" class="btn btn-ghost btn-xs text-slate-600">Skills</a>
             <a href="/dashboard/my-agents/${agent.id}" class="btn btn-primary btn-xs">Manage</a>
           </div>
         </div>`;
       grid.appendChild(card);
     });
   } catch {
-    grid.innerHTML = '<div class="col-span-full alert alert-error">Failed to load agents</div>';
+    grid.innerHTML = '<div class="col-span-full bg-red-50 border border-red-200 text-red-700 rounded-xl p-4">Failed to load agents</div>';
   }
 }
 

@@ -2,14 +2,14 @@
 
 from datetime import UTC, datetime
 from decimal import Decimal
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
 
-class PaymentStatus(str, Enum):
+class PaymentStatus(StrEnum):
     """x402 payment lifecycle states."""
 
     PAYMENT_REQUIRED = "payment-required"
@@ -20,7 +20,7 @@ class PaymentStatus(str, Enum):
     PAYMENT_FAILED = "payment-failed"
 
 
-class PaymentScheme(str, Enum):
+class PaymentScheme(StrEnum):
     """Supported payment schemes."""
 
     EXACT = "exact"  # Exact amount payment
@@ -94,8 +94,7 @@ class X402PaymentRequiredResponse(BaseModel):
     x402_version: str = Field(default="0.1", alias="x402Version")
     accepts: list[PaymentRequirements]
 
-    class Config:
-        populate_by_name = True
+    model_config = {"populate_by_name": True}
 
 
 class X402SettleResponse(BaseModel):
