@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from hashbot.agents.registry import get_registry
@@ -26,11 +26,8 @@ async def dashboard_home(request: Request):
 
 @router.get("/dashboard/agents", response_class=HTMLResponse)
 async def dashboard_agents(request: Request):
-    """Built-in agents list page."""
-    return templates.TemplateResponse(
-        "agents.html",
-        {"request": request, "active_page": "agents"},
-    )
+    """Redirect old built-in agents page to explore."""
+    return RedirectResponse(url="/dashboard/explore", status_code=302)
 
 
 @router.get("/dashboard/agents/{agent_id}", response_class=HTMLResponse)
@@ -72,7 +69,7 @@ async def dashboard_agent_chat(request: Request, agent_id: str):
 
     return templates.TemplateResponse(
         "agent_chat.html",
-        {"request": request, "active_page": "agents", "agent": agent},
+        {"request": request, "active_page": "explore", "agent": agent},
     )
 
 

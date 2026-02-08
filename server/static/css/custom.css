@@ -285,6 +285,14 @@
   background: #94a3b8;
 }
 
+/* Line clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* Animation utilities */
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;

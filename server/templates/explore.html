@@ -3,12 +3,22 @@
 {% block title %}HashBot - Explore Agents{% endblock %}
 
 {% block content %}
-<div class="flex items-center justify-between mb-6">
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
   <div>
     <h1 class="text-3xl font-bold text-slate-800">Explore Agents</h1>
-    <p class="text-sm text-slate-500 mt-1">Discover public agents created by the community</p>
+    <p class="text-sm text-slate-500 mt-1">Discover and try AI agents on HashKey Chain</p>
   </div>
-  <div class="badge bg-gradient-to-r from-sky-500 to-indigo-500 text-white border-none" id="explore-total">Loading...</div>
+  <div class="relative w-full sm:w-72">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+    <input type="text" id="search-input" placeholder="Search agents..." class="input input-bordered input-sm w-full pl-9 bg-white border-slate-300 focus:border-sky-500">
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs tabs-boxed bg-slate-100 p-1 rounded-xl mb-6 inline-flex">
+  <button class="tab tab-sm rounded-lg font-medium tab-active" data-tab="all" onclick="switchTab('all')">All</button>
+  <button class="tab tab-sm rounded-lg font-medium" data-tab="official" onclick="switchTab('official')">Official</button>
+  <button class="tab tab-sm rounded-lg font-medium" data-tab="community" onclick="switchTab('community')">Community</button>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="explore-grid">
@@ -21,57 +31,95 @@
 
 {% block scripts %}
 <script>
+let allAgents = [];
+let currentTab = 'all';
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('[data-tab]').forEach(btn => {
+    btn.classList.toggle('tab-active', btn.dataset.tab === tab);
+  });
+  renderAgents();
+}
+
+function renderAgents() {
+  const grid = document.getElementById('explore-grid');
+  const search = document.getElementById('search-input').value.toLowerCase();
+
+  let filtered = allAgents.filter(a => {
+    if (currentTab === 'official' && a.source !== 'official') return false;
+    if (currentTab === 'community' && a.source !== 'community') return false;
+    if (search && !a.name.toLowerCase().includes(search) && !(a.description || '').toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `
+      <div class="col-span-full text-center py-16">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+        <p class="text-lg text-slate-600 mb-2">No agents found</p>
+        <p class="text-sm text-slate-400 mb-6">${search ? 'Try a different search term' : 'Create an agent and make it public to see it here'}</p>
+        <a href="/dashboard/my-agents" class="btn btn-primary btn-sm">Create Agent</a>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = '';
+  filtered.forEach((agent, i) => {
+    const isOfficial = agent.source === 'official';
+    const isFree = isOfficial ? agent.price === 'Free' : !agent.price_per_call || agent.price_per_call <= 0;
+    const priceLabel = isOfficial ? agent.price : (isFree ? 'Free' : `${agent.price_per_call} ${agent.currency}`);
+    const skills = agent.skills || [];
+    const skillsHtml = skills.length > 0
+      ? `<div class="flex flex-wrap gap-1 mt-2">${skills.slice(0,2).map(s => `<span class="skill-tag">${s}</span>`).join('')}${skills.length > 2 ? `<span class="text-xs text-slate-400">+${skills.length - 2} more</span>` : ''}</div>`
+      : '';
+
+    const card = document.createElement('div');
+    card.className = 'card bg-white shadow-sm border border-slate-200/60 hover:shadow-lg hover:border-sky-300 transition-all animate-fade-in';
+    card.style.animationDelay = `${i * 0.03}s`;
+    card.innerHTML = `
+      <div class="card-body">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center gap-2">
+            <h2 class="card-title text-slate-800 text-base">${agent.name}</h2>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${isOfficial ? 'bg-sky-100 text-sky-700' : 'bg-emerald-100 text-emerald-700'}">${isOfficial ? 'Official' : 'Community'}</span>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap ${isFree ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${priceLabel}</span>
+        </div>
+        <p class="text-slate-500 text-sm line-clamp-2 mt-1">${agent.description || 'No description'}</p>
+        ${skillsHtml}
+        <div class="card-actions justify-end mt-4">
+          <a href="/dashboard/agents/${agent.id}" class="btn btn-primary btn-sm">Try Now</a>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
 async function loadExplore() {
   const grid = document.getElementById('explore-grid');
   try {
-    const resp = await fetch('/api/agents/');
-    const data = await resp.json();
-    const agents = data.agents || [];
+    // Load both built-in and community agents in parallel
+    const [builtinResp, communityResp] = await Promise.all([
+      fetch('/agents'),
+      fetch('/api/agents/')
+    ]);
+    const builtinData = await builtinResp.json();
+    const communityData = await communityResp.json();
 
-    document.getElementById('explore-total').textContent = `${agents.length} public agents`;
+    const builtinAgents = (builtinData.agents || []).map(a => ({...a, source: 'official'}));
+    const communityAgents = (communityData.agents || []).map(a => ({...a, source: 'community'}));
 
-    if (agents.length === 0) {
-      grid.innerHTML = `
-        <div class="col-span-full text-center py-16">
-          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          </div>
-          <p class="text-lg text-slate-600 mb-2">No community agents yet</p>
-          <p class="text-sm text-slate-400 mb-6">Create an agent and make it public, or try the built-in agents</p>
-          <div class="flex gap-3 justify-center">
-            <a href="/dashboard/my-agents" class="btn btn-primary btn-sm">Create Agent</a>
-            <a href="/dashboard/agents" class="btn btn-ghost btn-sm border border-slate-300 text-slate-600">View Built-in Agents</a>
-          </div>
-        </div>`;
-      return;
-    }
-
-    grid.innerHTML = '';
-    agents.forEach((agent, i) => {
-      const card = document.createElement('div');
-      card.className = 'card bg-white shadow-sm border border-slate-200/60 hover:shadow-lg hover:border-sky-300 transition-all animate-fade-in';
-      card.style.animationDelay = `${i * 0.05}s`;
-      card.innerHTML = `
-        <div class="card-body">
-          <div class="flex items-start justify-between">
-            <h2 class="card-title text-slate-800">${agent.name}</h2>
-            ${agent.price_per_call > 0
-              ? `<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700">${agent.price_per_call} ${agent.currency}</span>`
-              : '<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">Free</span>'}
-          </div>
-          <p class="text-slate-500 text-sm">${agent.description || 'No description'}</p>
-          <div class="text-xs text-slate-400 mt-1">Created: ${new Date(agent.created_at).toLocaleDateString()}</div>
-          <div class="card-actions justify-end mt-4">
-            <a href="/dashboard/agents/${agent.id}" class="btn btn-primary btn-sm">Chat</a>
-          </div>
-        </div>`;
-      grid.appendChild(card);
-    });
+    allAgents = [...builtinAgents, ...communityAgents];
+    renderAgents();
   } catch {
     grid.innerHTML = '<div class="col-span-full bg-red-50 border border-red-200 text-red-700 rounded-xl p-4">Failed to load agents</div>';
   }
 }
 
+document.getElementById('search-input').addEventListener('input', renderAgents);
 loadExplore();
 </script>
 {% endblock %}
